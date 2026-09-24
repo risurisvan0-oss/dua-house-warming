@@ -7,9 +7,10 @@ import { bismillahArabic } from '../../data/translations';
 import { useEventConfig } from '../../hooks/useEventConfig';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useWeather } from '../../hooks/useWeather';
+import { useGuestCount } from '../../hooks/useGuestCount';
 import { storageService, type RsvpStatus } from '../../services/storageService';
 import { playChime } from '../../utils/chime';
-import { calendarLink, eventStartDateTime, formatHijriEventDate, formatEventTimeRange, getEventPhase } from '../../utils/dateTime';
+import { calendarLink, eventStartDateTime, formatHijriEventDate, formatEventTimeRange, formatRsvpByDate, getEventPhase } from '../../utils/dateTime';
 import { directionsLink } from '../../utils/contact';
 import { notifyHost } from '../../services/notifyHostService';
 
@@ -31,9 +32,13 @@ export function StoryPage({
   const { t, language } = useLanguage();
   const eventConfig = useEventConfig();
   const weather = useWeather(eventConfig);
+  const guestCount = useGuestCount();
   const guestName = storageService.getGuestName();
+  const guestNote = storageService.getGuestNote();
   const [rsvp, setRsvp] = useState<RsvpStatus | null>(storageService.getRsvp());
   const [guests, setGuests] = useState(storageService.getGuests());
+  const [dietaryNotes, setDietaryNotes] = useState(storageService.getDietaryNotes());
+  const rsvpByDate = formatRsvpByDate();
   const [chapter, setChapter] = useState(0);
   const sections = useRef<(HTMLElement | null)[]>([]);
 
@@ -58,6 +63,7 @@ export function StoryPage({
       guestName: guestName ?? 'Guest',
       rsvpStatus: status,
       guests: status === 'yes' ? guests : undefined,
+      dietaryNotes: status === 'yes' ? dietaryNotes || undefined : undefined,
     });
   };
   const changeGuests = (next: number) => {
@@ -72,6 +78,20 @@ export function StoryPage({
         guestName: guestName ?? 'Guest',
         rsvpStatus: 'yes',
         guests: clamped,
+        dietaryNotes: dietaryNotes || undefined,
+      });
+    }
+  };
+  const handleDietaryBlur = () => {
+    storageService.setDietaryNotes(dietaryNotes);
+    if (rsvp === 'yes') {
+      notifyHost({
+        type: 'rsvp',
+        guestId: storageService.getGuestId(),
+        guestName: guestName ?? 'Guest',
+        rsvpStatus: 'yes',
+        guests,
+        dietaryNotes: dietaryNotes || undefined,
       });
     }
   };
@@ -124,6 +144,11 @@ export function StoryPage({
         {guestName && (
           <motion.p {...reveal} className="mt-5 font-heading text-3xl italic text-gold-deep">
             {t('dearGuest')} {guestName},
+          </motion.p>
+        )}
+        {guestNote && (
+          <motion.p {...reveal} className="mt-2 max-w-[19rem] text-sm italic text-emerald">
+            {guestNote}
           </motion.p>
         )}
         <motion.p {...reveal} dir="rtl" className="mt-3 font-display text-2xl text-forest">{bismillahArabic}</motion.p>
@@ -192,6 +217,16 @@ export function StoryPage({
       >
         <p className="absolute inset-x-0 top-16 text-center text-[11px] uppercase tracking-[0.3em] text-[#e8c77a]">{t('chapterMajlis')}</p>
         <motion.h2 {...reveal} className="mt-5 text-center font-heading text-4xl italic leading-tight">{t('willYouJoinUs')}</motion.h2>
+        {!rsvp && rsvpByDate && (
+          <motion.p {...reveal} className="mt-2 text-center text-sm text-[#e8c77a]">
+            {t('kindlyRsvpBy')} {rsvpByDate}
+          </motion.p>
+        )}
+        {guestCount && guestCount.confirmedGuests > 0 && (
+          <motion.p {...reveal} className="mt-2 text-center text-xs text-cream/70">
+            🎉 {guestCount.confirmedGuests} {t('guestsConfirmedSoFar')}
+          </motion.p>
+        )}
 
         <div className="mt-7 flex flex-col gap-2.5">
           {rsvpOptions.map((o) => {
@@ -234,6 +269,22 @@ export function StoryPage({
             <motion.button type="button" whileTap={{ scale: 0.9 }} aria-label="More guests" onClick={() => changeGuests(guests + 1)} className="h-12 w-12 rounded-full bg-[#e8c77a] text-xl text-forest">+</motion.button>
           </div>
         </div>
+
+        {rsvp === 'yes' && (
+          <motion.div {...reveal} className="mt-4">
+            <label htmlFor="dietary-notes" className="block text-xs font-medium text-cream/60 mb-1.5">
+              {t('dietaryPreferencesOptional')}
+            </label>
+            <input
+              id="dietary-notes"
+              value={dietaryNotes}
+              onChange={(e) => setDietaryNotes(e.target.value)}
+              onBlur={handleDietaryBlur}
+              placeholder={t('dietaryPreferencesPlaceholder')}
+              className="w-full rounded-xl border border-[#e8c77a]/40 bg-transparent px-4 py-3 text-[15px] text-cream placeholder:text-cream/40 outline-none focus:border-[#e8c77a]"
+            />
+          </motion.div>
+        )}
 
         <AnimatePresence mode="wait">
           {confirmation && (

@@ -5,10 +5,13 @@ import { QrCode } from '../../components/QrCode';
 
 export function PersonalizedLinkGenerator() {
   const [name, setName] = useState('');
+  const [note, setNote] = useState('');
   const [copied, setCopied] = useState(false);
 
   const baseUrl = `${window.location.origin}${window.location.pathname.replace(/admin\/?$/, '')}`;
-  const link = name.trim() ? `${baseUrl}?to=${encodeURIComponent(name.trim())}` : '';
+  const link = name.trim()
+    ? `${baseUrl}?to=${encodeURIComponent(name.trim())}${note.trim() ? `&note=${encodeURIComponent(note.trim())}` : ''}`
+    : '';
 
   const handleCopy = async () => {
     if (!link) return;
@@ -38,6 +41,12 @@ export function PersonalizedLinkGenerator() {
           {copied ? 'Copied ✓' : 'Copy'}
         </Button>
       </div>
+      <input
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        placeholder="Personal note (optional) — e.g. Reserved seating for you"
+        className="mt-2 w-full rounded-xl border border-forest/20 bg-cream px-3.5 py-2.5 text-sm outline-none focus:border-gold"
+      />
       {link && (
         <div className="mt-3 flex items-center gap-3 rounded-lg bg-forest/5 p-2.5">
           <QrCode value={link} size={72} />

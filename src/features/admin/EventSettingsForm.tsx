@@ -116,6 +116,14 @@ export function EventSettingsForm() {
         <Field label="Address">
           <input className={inputClass} value={form.address} onChange={(e) => update('address', e.target.value)} />
         </Field>
+        <Field label="RSVP By Date (optional reminder)">
+          <input
+            type="date"
+            className={inputClass}
+            value={form.rsvpByDate ?? ''}
+            onChange={(e) => update('rsvpByDate', e.target.value === '' ? null : e.target.value)}
+          />
+        </Field>
         <div className="grid grid-cols-2 gap-3">
           <Field label="Latitude">
             <input

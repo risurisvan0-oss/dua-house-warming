@@ -80,6 +80,13 @@ export const translations = {
     en: "Prefer your own maps app? We'll open Google Maps instead.",
     ml: 'നിങ്ങളുടെ സ്വന്തം മാപ്സ് ആപ്പ് ഉപയോഗിക്കാൻ താൽപ്പര്യമുണ്ടോ? പകരം ഞങ്ങൾ Google Maps തുറക്കാം.',
   },
+  kindlyRsvpBy: { en: 'Kindly RSVP by', ml: 'ദയവായി ഈ തീയതിക്ക് മുൻപ് അറിയിക്കുക:' },
+  dietaryPreferencesOptional: { en: 'Dietary preferences (optional)', ml: 'ഭക്ഷണ ക്രമീകരണങ്ങൾ (ഓപ്ഷണൽ)' },
+  dietaryPreferencesPlaceholder: {
+    en: 'e.g. vegetarian, no shellfish',
+    ml: 'ഉദാ. വെജിറ്റേറിയൻ, കക്കയിറച്ചി ഒഴിവാക്കുക',
+  },
+  guestsConfirmedSoFar: { en: 'guests confirmed so far', ml: 'അതിഥികൾ ഇതുവരെ സ്ഥിരീകരിച്ചു' },
 
   // ---- Location permission ----
   journeyExperience: { en: 'Journey Experience', ml: 'യാത്രാ അനുഭവം' },

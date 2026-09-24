@@ -58,6 +58,20 @@ export function formatHijriEventDate(): string | null {
   }
 }
 
+/**
+ * Human-readable "please respond by" date for the RSVP reminder, e.g.
+ * "12 October". Returns null if no `rsvpByDate` is configured, or if
+ * that date has already passed (no point nagging about a missed
+ * deadline — the RSVP options themselves stay open regardless).
+ */
+export function formatRsvpByDate(): string | null {
+  const cfg = getEffectiveEventConfig();
+  if (!cfg.rsvpByDate) return null;
+  const deadline = new Date(`${cfg.rsvpByDate}T23:59:59+05:30`);
+  if (Number.isNaN(deadline.getTime()) || deadline < new Date()) return null;
+  return deadline.toLocaleDateString('en-IN', { timeZone: TIME_ZONE, day: 'numeric', month: 'long' });
+}
+
 /** Google Calendar "quick add" link — free, requires no API key or account setup by us. */
 export function calendarLink(): string {
   const cfg = getEffectiveEventConfig();

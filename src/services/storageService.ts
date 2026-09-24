@@ -26,6 +26,8 @@ const KEYS = {
   hasSeenOpening: 'dua:hasSeenOpening',
   guestName: 'dua:guestName',
   guests: 'dua:guests',
+  guestNote: 'dua:guestNote',
+  dietaryNotes: 'dua:dietaryNotes',
 } as const;
 
 function readRaw(key: string): string | null {
@@ -173,6 +175,23 @@ export const storageService = {
     writeRaw(KEYS.guestName, name);
   },
 
+  /** Set once from a personalised `?note=<text>` link (see /admin's
+   * Personalised Links tool) — a short host-written note just for this
+   * guest, e.g. "Reserved seating for you". Null for a link with no note. */
+  getGuestNote(): string | null {
+    return readRaw(KEYS.guestNote);
+  },
+  setGuestNote(note: string): void {
+    writeRaw(KEYS.guestNote, note);
+  },
+
+  getDietaryNotes(): string {
+    return readRaw(KEYS.dietaryNotes) ?? '';
+  },
+  setDietaryNotes(notes: string): void {
+    writeRaw(KEYS.dietaryNotes, notes);
+  },
+
   /**
    * Wipes every guest-facing key (RSVP, journey progress, guestbook entry,
    * guest id — a brand new one is generated next) so the invitation opens
@@ -187,6 +206,9 @@ export const storageService = {
     removeRaw(KEYS.guestbookEntry);
     removeRaw(KEYS.invitationOpenedAt);
     removeRaw(KEYS.hasSeenOpening);
+    removeRaw(KEYS.dietaryNotes);
+    // Deliberately keeps guestNote — it came from the link itself (?note=),
+    // so a fresh replay should still greet the guest with the same note.
     this.resetJourney();
   },
 };

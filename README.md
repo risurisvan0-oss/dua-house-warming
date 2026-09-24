@@ -154,6 +154,25 @@ messages. These edits are saved to `localStorage` in *your* browser only —
 they're for demoing/tuning the copy quickly. For the real deployed build
 that every guest sees, edit `src/config/event.ts` directly and redeploy.
 
+## RSVP & personalisation
+
+The invitation's "Majlis" chapter (`src/features/invitation/StoryPage.tsx`)
+collects a Yes/Maybe/No RSVP, a headcount (1–8, editable any time), and an
+optional dietary-preferences note — all saved locally per guest
+(`storageService.ts`) and, if configured, forwarded to the host's Google
+Sheet (see [Seeing RSVPs as a host](#seeing-rsvps-as-a-host)).
+
+Setting `rsvpByDate` in `src/config/event.ts` (or `/admin` → Event
+Settings) shows a gentle "Kindly RSVP by …" reminder to guests who
+haven't responded yet; it disappears once the date passes or they RSVP.
+Leave it null (the default) to skip the reminder.
+
+`/admin` → **Personalised Links** generates a per-guest link (`?to=<name>`)
+that greets that guest by name, plus an optional personal note
+(`&note=<text>`, e.g. "Reserved seating for you") shown just below their
+name on the invitation — both are stripped from the URL and saved to that
+guest's device on first open.
+
 ## Language
 
 English and Malayalam are both fully supported. Every string lives in
@@ -186,7 +205,9 @@ phone (see above) — nobody else can see them. If you want to see them
 yourself as they come in, `src/services/notifyHostService.ts` can send a
 copy of every RSVP and guestbook message to a **free Google Sheet**, with
 no backend, no server, and no cost. It's entirely optional and off by
-default.
+default. This same setup also powers the optional "🎉 N guests confirmed
+so far" counter shown on the invitation (`src/services/guestCountService.ts`)
+— skip that part of the script if you don't want the counter.
 
 ### Setup (about 5 minutes, free Google account only)
 
@@ -204,11 +225,38 @@ default.
        data.guestName,
        data.rsvpStatus ?? '',
        data.guests ?? '',
+       data.dietaryNotes ?? '',
        data.message ?? '',
        data.hasVoiceMessage ? 'yes' : '',
        data.guestId,
      ]);
      return ContentService.createTextOutput('OK');
+   }
+
+   // Powers the optional "N guests confirmed so far" counter on the
+   // invitation. Keeps only each guest's MOST RECENT "yes" RSVP (so
+   // someone who later changes their headcount, or switches to "no",
+   // isn't double-counted) and sums up the party sizes. Delete this
+   // function if you don't want the live counter — everything else
+   // still works without it.
+   function doGet() {
+     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+     const rows = sheet.getDataRange().getValues();
+     const latestByGuest = {};
+     rows.forEach((row) => {
+       const [timestamp, type, , rsvpStatus, guests, , , , guestId] = row;
+       if (type !== 'rsvp' || !guestId) return;
+       const existing = latestByGuest[guestId];
+       if (!existing || new Date(timestamp) >= new Date(existing.timestamp)) {
+         latestByGuest[guestId] = { timestamp, rsvpStatus, guests };
+       }
+     });
+     const confirmedGuests = Object.values(latestByGuest)
+       .filter((g) => g.rsvpStatus === 'yes')
+       .reduce((sum, g) => sum + (Number(g.guests) || 0), 0);
+     return ContentService
+       .createTextOutput(JSON.stringify({ confirmedGuests }))
+       .setMimeType(ContentService.MimeType.JSON);
    }
    ```
 
@@ -220,15 +268,27 @@ default.
    paste it into `/admin` → Event Settings → **Host Notifications Webhook
    URL** to try it first without redeploying.
 
-From then on, every RSVP (including headcount changes) and every
-guestbook message appends a row to that Sheet — open it on your phone or
-laptop any time to see responses live, with no dashboard, login, or app
-to build. Leaving the field blank (the default) sends nothing anywhere.
+From then on, every RSVP (including headcount and dietary-note changes)
+and every guestbook message appends a row to that Sheet — open it on your
+phone or laptop any time to see responses live, with no dashboard, login,
+or app to build. Leaving the field blank (the default) sends nothing
+anywhere.
 
-Because Apps Script Web Apps don't return browser-readable CORS headers,
-this uses a fire-and-forget `no-cors` POST — it never blocks or fails a
-guest's RSVP/guestbook submission even if the Sheet is unreachable, full,
-or the URL is wrong; the guest's own local copy is unaffected either way.
+Because Apps Script Web Apps don't return browser-readable CORS headers
+for POST, that part uses a fire-and-forget `no-cors` request — it never
+blocks or fails a guest's RSVP/guestbook submission even if the Sheet is
+unreachable, full, or the URL is wrong; the guest's own local copy is
+unaffected either way. The `doGet` counter read is a plain GET with no
+custom headers, which Apps Script does serve with normal CORS headers, so
+that one can be read back and shown on the page.
+
+### Exporting responses as a CSV
+
+No extra code needed — this is a built-in Google Sheets feature. Open the
+Sheet and use **File → Download → Comma-separated values (.csv)**. Do
+this any time to get a spreadsheet snapshot of every response so far, or
+share the Sheet itself (**Share** button) with anyone who's helping with
+the guest list.
 
 ## Privacy & geolocation safety
 
@@ -313,7 +373,8 @@ src/
     storageService.ts      # typed localStorage/sessionStorage access
     adminConfigService.ts  # local /admin Event Settings overrides
     notifyHostService.ts   # optional fire-and-forget webhook to a Google Sheet
-  hooks/                  # useLanguage, useEventConfig, useJourney
+    guestCountService.ts   # optional read-back of the live confirmed-guest count
+  hooks/                  # useLanguage, useEventConfig, useJourney, useGuestCount
   features/
     invitation/           # opening, welcome, RSVP, event details, contact
     journey/               # intro, permission, arrival reveal, event mode, thank you

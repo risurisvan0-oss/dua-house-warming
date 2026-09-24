@@ -39,6 +39,12 @@ export interface EventConfig {
    */
   hostNotifyWebhookUrl: string | null;
 
+  /**
+   * OPTIONAL. YYYY-MM-DD "kindly respond by" date shown to guests who
+   * haven't RSVP'd yet. Leave null to skip the reminder entirely.
+   */
+  rsvpByDate: string | null;
+
   welcomeMessageEn: string;
   welcomeMessageMl: string;
   arrivalMessageEn: string;
@@ -65,6 +71,7 @@ export const eventConfig: EventConfig = {
   departureDelayMinutes: 7,
 
   hostNotifyWebhookUrl: null,
+  rsvpByDate: null,
 
   welcomeMessageEn:
     'With the blessings of Allah, we are beginning a beautiful new chapter in our new home. We would be delighted to have you with us as we celebrate this special day.',

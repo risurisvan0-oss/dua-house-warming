@@ -30,6 +30,17 @@ if (guestNameParam && guestNameParam.trim()) {
   urlChanged = true
 }
 
+// A ?note=<text> link (paired with ?to=) adds a short personal note just
+// for this guest, e.g. "Reserved seating for you" — see /admin's
+// "Personalised Links" tool. Trimmed to a sane length and stored once,
+// then scrubbed from the URL so it stays clean/shareable.
+const guestNoteParam = url.searchParams.get('note')
+if (guestNoteParam && guestNoteParam.trim()) {
+  storageService.setGuestNote(guestNoteParam.trim().slice(0, 200))
+  url.searchParams.delete('note')
+  urlChanged = true
+}
+
 if (urlChanged) {
   window.history.replaceState(null, '', url.pathname + url.search + url.hash)
 }
