@@ -10,6 +10,9 @@ export interface HostNotification {
   dietaryNotes?: string;
   guestNames?: string;
   message?: string;
+  /** Guestbook only — true if the guest explicitly agreed to show this
+   * message on the venue's Event Display Mode wall (see README). */
+  isPublic?: boolean;
   hasVoiceMessage?: boolean;
   timestamp: string; // ISO 8601
 }

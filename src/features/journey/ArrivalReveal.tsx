@@ -27,22 +27,48 @@ export function ArrivalReveal({ onEnter }: { onEnter: () => void }) {
       className="islamic-pattern-bg paper-grain relative min-h-dvh flex flex-col items-center justify-center px-6 py-10 text-center overflow-hidden"
     >
       <LatticeBorder />
-      {/* soft ambient particles */}
-      {Array.from({ length: 14 }).map((_, i) => (
+
+      {/* Large, slow-drifting lantern glows for atmosphere behind everything. */}
+      {Array.from({ length: 3 }).map((_, i) => (
         <motion.span
-          key={i}
-          className="absolute rounded-full bg-gold/40"
+          key={`glow-${i}`}
+          className="absolute rounded-full blur-2xl"
           style={{
-            width: 4 + (i % 3) * 3,
-            height: 4 + (i % 3) * 3,
-            left: `${(i * 37) % 100}%`,
-            top: `${(i * 53) % 100}%`,
+            width: 90 + i * 20,
+            height: 90 + i * 20,
+            left: `${18 + i * 32}%`,
+            top: `${25 + (i % 2) * 40}%`,
+            background: 'radial-gradient(circle, color-mix(in srgb, var(--color-gold) 55%, transparent), transparent 70%)',
           }}
           initial={{ opacity: 0, y: 0 }}
-          animate={{ opacity: [0, 0.8, 0], y: -40 }}
-          transition={{ duration: 4 + (i % 4), repeat: Infinity, delay: i * 0.3 }}
+          animate={{ opacity: [0.15, 0.4, 0.15], y: [-10, 10, -10] }}
+          transition={{ duration: 7 + i * 2, repeat: Infinity, ease: 'easeInOut', delay: i * 0.8 }}
         />
       ))}
+
+      {/* Floating embers: small glowing points that drift upward with a
+          gentle sideways sway, like lanterns rising into the night. */}
+      {Array.from({ length: 18 }).map((_, i) => {
+        const size = 3 + (i % 4) * 2;
+        const sway = 14 + (i % 5) * 6;
+        return (
+          <motion.span
+            key={`ember-${i}`}
+            className="absolute rounded-full"
+            style={{
+              width: size,
+              height: size,
+              left: `${(i * 29) % 100}%`,
+              top: `${(i * 47) % 100}%`,
+              background: 'var(--color-gold)',
+              boxShadow: '0 0 8px 2px color-mix(in srgb, var(--color-gold) 70%, transparent)',
+            }}
+            initial={{ opacity: 0, y: 0, x: 0 }}
+            animate={{ opacity: [0, 0.9, 0], y: -70 - (i % 3) * 20, x: [0, sway, -sway, 0] }}
+            transition={{ duration: 5 + (i % 5), repeat: Infinity, ease: 'easeInOut', delay: i * 0.35 }}
+          />
+        );
+      })}
 
       <motion.div
         initial={{ scale: 0.6, opacity: 0 }}

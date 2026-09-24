@@ -123,6 +123,11 @@ export const translations = {
   saveContact: { en: '💾 Save Contact', ml: '💾 കോൺടാക്റ്റ് സേവ് ചെയ്യുക' },
   meetTheHosts: { en: 'Meet the Hosts', ml: 'ആതിഥേയരെ പരിചയപ്പെടുക' },
   landmarkNoteLabel: { en: "📍 Look out for", ml: '📍 ഇത് ശ്രദ്ധിക്കുക' },
+  compassToDua: { en: 'Compass to DUA', ml: 'DUA-യിലേക്കുള്ള കോമ്പസ്' },
+  showOnWallConsent: {
+    en: 'Show my message on the screen at the venue',
+    ml: 'എന്റെ സന്ദേശം വേദിയിലെ സ്ക്രീനിൽ കാണിക്കുക',
+  },
 
   // ---- Location permission ----
   journeyExperience: { en: 'Journey Experience', ml: 'യാത്രാ അനുഭവം' },

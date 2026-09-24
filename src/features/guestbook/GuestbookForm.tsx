@@ -14,6 +14,7 @@ export function GuestbookForm({ onDone }: { onDone: () => void }) {
   const [name, setName] = useState(existing?.name ?? '');
   const [message, setMessage] = useState(existing?.message ?? '');
   const [voiceBlob, setVoiceBlob] = useState<Blob | null>(null);
+  const [showOnWall, setShowOnWall] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(!!existing);
   const [savedAudioUrl] = useState(existing?.audioDataUrl ?? null);
@@ -38,6 +39,7 @@ export function GuestbookForm({ onDone }: { onDone: () => void }) {
         guestId: storageService.getGuestId(),
         guestName: name.trim(),
         message: message.trim(),
+        isPublic: showOnWall,
         hasVoiceMessage: !!audioDataUrl,
       });
     } finally {
@@ -92,6 +94,16 @@ export function GuestbookForm({ onDone }: { onDone: () => void }) {
           </div>
 
           <VoiceRecorderField onChange={setVoiceBlob} />
+
+          <label className="flex items-start gap-2.5 text-sm text-charcoal/75">
+            <input
+              type="checkbox"
+              checked={showOnWall}
+              onChange={(e) => setShowOnWall(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-gold"
+            />
+            {t('showOnWallConsent')}
+          </label>
 
           <p className="text-xs text-charcoal/50">{t('guestbookLocalNotice')}</p>
           <Button type="submit" fullWidth disabled={submitting}>

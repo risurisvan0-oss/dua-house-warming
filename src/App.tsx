@@ -33,6 +33,9 @@ const JourneyMap = lazy(() => import('./features/map/JourneyMap').then((m) => ({
 const AdminDashboard = lazy(() =>
   import('./features/admin/AdminDashboard').then((m) => ({ default: m.AdminDashboard })),
 );
+const DisplayWallPage = lazy(() =>
+  import('./features/display/DisplayWallPage').then((m) => ({ default: m.DisplayWallPage })),
+);
 
 type Screen =
   | 'opening'
@@ -236,6 +239,14 @@ function App() {
           element={
             <Suspense fallback={<div className="min-h-dvh bg-cream" />}>
               <AdminDashboard />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/wall"
+          element={
+            <Suspense fallback={<div className="min-h-dvh bg-forest" />}>
+              <DisplayWallPage />
             </Suspense>
           }
         />

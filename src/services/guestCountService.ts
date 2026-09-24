@@ -9,6 +9,19 @@ export interface GuestCountSnapshot {
    * banner" in the README. Undefined/empty when there's nothing to show.
    */
   announcement?: string;
+  /**
+   * Names of the most recent arrivals, most recent first — powers the
+   * [Event Display Mode](#event-display-mode-wall) celebration toasts.
+   * Undefined/empty when the script doesn't provide it.
+   */
+  recentArrivals?: string[];
+  /**
+   * The most recently consented-to-display guestbook messages, most
+   * recent first — also for Event Display Mode's blessings wall. A
+   * guest's message only appears here if they explicitly opted in when
+   * writing it (see the Guestbook form).
+   */
+  wallMessages?: { name: string; message: string }[];
 }
 
 /**
@@ -34,9 +47,20 @@ export async function fetchGuestCount(): Promise<GuestCountSnapshot | null> {
     const confirmedGuests = (data as { confirmedGuests?: unknown })?.confirmedGuests;
     if (typeof confirmedGuests !== 'number' || !Number.isFinite(confirmedGuests)) return null;
     const announcement = (data as { announcement?: unknown })?.announcement;
+    const rawArrivals = (data as { recentArrivals?: unknown })?.recentArrivals;
+    const recentArrivals = Array.isArray(rawArrivals) ? rawArrivals.filter((n): n is string => typeof n === 'string') : undefined;
+    const rawWall = (data as { wallMessages?: unknown })?.wallMessages;
+    const wallMessages = Array.isArray(rawWall)
+      ? rawWall.filter(
+          (m): m is { name: string; message: string } =>
+            !!m && typeof m === 'object' && typeof (m as { name?: unknown }).name === 'string' && typeof (m as { message?: unknown }).message === 'string',
+        )
+      : undefined;
     return {
       confirmedGuests,
       announcement: typeof announcement === 'string' && announcement.trim() ? announcement.trim() : undefined,
+      recentArrivals,
+      wallMessages,
     };
   } catch {
     return null;

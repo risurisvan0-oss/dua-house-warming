@@ -307,12 +307,13 @@ copy of every RSVP, guestbook message, **and arrival** (the moment a
 guest's Journey confirms they've reached DUA — not fired by `/admin` demo
 testing) to a **free Google Sheet**, with no backend, no server, and no
 cost. It's entirely optional and off by default. This same setup also
-powers two more optional, purely additive features that read the Sheet
-back:
+powers three more optional, purely additive features that read the
+Sheet back:
 
 - the "🎉 N guests confirmed so far" counter on the invitation
   (`src/services/guestCountService.ts`)
 - the [live announcement banner](#live-announcement-banner) below
+- [Event Display Mode](#event-display-mode-wall) — the `/wall` screen
 
 Skip either part of the script below if you don't want that feature —
 everything else still works without it.
@@ -338,16 +339,21 @@ everything else still works without it.
        data.message ?? '',
        data.hasVoiceMessage ? 'yes' : '',
        data.guestId,
+       data.isPublic ? 'yes' : '', // guestbook consent for the Event Display Mode wall
      ]);
      return ContentService.createTextOutput('OK');
    }
 
-   // Powers the optional "N guests confirmed so far" counter, and the
-   // optional live announcement banner, on the invitation.
+   // Powers the "N guests confirmed" counter, the live announcement
+   // banner, and Event Display Mode's arrival celebrations + blessings
+   // wall — all on the invitation/wall pages, none of it needs a
+   // redeploy to change.
    function doGet() {
      const ss = SpreadsheetApp.getActiveSpreadsheet();
      const sheet = ss.getActiveSheet();
      const rows = sheet.getDataRange().getValues();
+     // Columns: timestamp, type, guestName, rsvpStatus, guests,
+     // dietaryNotes, guestNames, message, hasVoiceMessage, guestId, isPublic
 
      // Keeps only each guest's MOST RECENT "yes" RSVP (so someone who
      // later changes their headcount, or switches to "no", isn't
@@ -365,6 +371,22 @@ everything else still works without it.
        .filter((g) => g.rsvpStatus === 'yes')
        .reduce((sum, g) => sum + (Number(g.guests) || 0), 0);
 
+     // Most recent arrivals first, for Event Display Mode's celebration
+     // toasts — capped so the response stays small.
+     const recentArrivals = rows
+       .filter((row) => row[1] === 'arrival')
+       .sort((a, b) => new Date(b[0]) - new Date(a[0]))
+       .slice(0, 15)
+       .map((row) => row[2]);
+
+     // Only guestbook messages the guest explicitly consented to show
+     // (column 11 === 'yes'), most recent first, for the blessings wall.
+     const wallMessages = rows
+       .filter((row) => row[1] === 'guestbook' && row[10] === 'yes')
+       .sort((a, b) => new Date(b[0]) - new Date(a[0]))
+       .slice(0, 20)
+       .map((row) => ({ name: row[2], message: row[7] }));
+
      // Optional: an "Announcement" tab, cell A1 = your message. Leave the
      // tab out (or A1 empty) to send no announcement — see "Live
      // announcement banner" below.
@@ -372,7 +394,7 @@ everything else still works without it.
      const announcement = announcementSheet ? String(announcementSheet.getRange('A1').getValue() || '') : '';
 
      return ContentService
-       .createTextOutput(JSON.stringify({ confirmedGuests, announcement }))
+       .createTextOutput(JSON.stringify({ confirmedGuests, announcement, recentArrivals, wallMessages }))
        .setMimeType(ContentService.MimeType.JSON);
    }
    ```
@@ -421,6 +443,40 @@ shows it as a dismissible banner at the top of the screen. Clear cell A1
 (or delete the tab) to stop showing it. A guest who dismisses one message
 will still see a *different* later message — dismissal is remembered
 per exact text, not as a one-time "seen it" flag.
+
+## Event Display Mode (`/wall`)
+
+Requires the `hostNotifyWebhookUrl` setup above. A separate screen at
+`/wall` (`src/features/display/DisplayWallPage.tsx`), meant to be cast
+to a TV or projector **at the venue itself** rather than opened on a
+guest's own phone — turning the invitation from something everyone
+experiences alone into a shared moment in the room:
+
+- **Before the event**: a large ambient countdown to the start time.
+- **During/after**: the live confirmed-guest count, a celebratory toast
+  each time a new arrival comes in ("🎉 Ahmed has arrived!") pulled from
+  the same Sheet used for [Seeing RSVPs as a host](#seeing-rsvps-as-a-host),
+  and a slow auto-scrolling wall of guestbook blessings.
+
+Guestbook messages only appear on the wall if the guest explicitly
+ticked **"Show my message on the screen at the venue"** when writing
+it — nothing is shown publicly without that consent. Everything on this
+page degrades gracefully to just the header and countdown if the webhook
+isn't configured; it never shows an error. Polls the Sheet every 15
+seconds while the page stays open (e.g. left running on a TV all day),
+independent of the single-fetch guest count shown elsewhere.
+
+## AR compass to DUA
+
+On the Journey map, tapping the 🧭 button (top-right, next to the back
+button) requests compass access and then shows an arrow that always
+points toward DUA, using the phone's device-orientation heading
+(`src/hooks/useDeviceHeading.ts`) combined with the bearing from the
+guest's current position to DUA's coordinates. A playful "which way do I
+go" aid layered on top of the map/route, especially fun for kids. iOS
+requires the tap (compass permission needs a user gesture); most other
+browsers just start working. Hides itself entirely on devices/browsers
+with no compass to give.
 
 ## Privacy & geolocation safety
 
@@ -515,13 +571,13 @@ src/
     storageService.ts      # typed localStorage/sessionStorage access
     adminConfigService.ts  # local /admin Event Settings overrides
     notifyHostService.ts   # optional fire-and-forget webhook to a Google Sheet
-    guestCountService.ts   # optional read-back of the live guest count + announcement
+    guestCountService.ts   # optional read-back of live guest count/announcement/wall data
   utils/
     pwaInstall.ts           # beforeinstallprompt/iOS/standalone detection
     notifications.ts        # local "remind me on the day" notification helper
   hooks/                  # useLanguage, useEventConfig, useJourney, useGuestCount,
                            # useEventDayForecast, useEventDayReminder, usePrayerTimes,
-                           # useTextScale
+                           # useTextScale, useDeviceHeading
   features/
     invitation/           # opening, welcome, RSVP, event details, contact
     journey/               # intro, permission, arrival reveal, event mode, thank you
@@ -529,8 +585,9 @@ src/
     guestbook/
     faq/                    # Ask DUA floating widget
     admin/                  # /admin dashboard, demo controls, settings form
+    display/                # /wall — Event Display Mode, for a TV at the venue
   components/             # Button, Card, BottomSheet, LanguageSwitcher, HomeIllustration,
-                           # AnnouncementBanner, InstallAppBanner, TextSizeToggle
+                           # AnnouncementBanner, InstallAppBanner, TextSizeToggle, CompassArrow
   sw.ts                   # custom service worker (injectManifest)
 ```
 

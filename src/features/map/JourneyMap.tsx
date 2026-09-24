@@ -5,6 +5,7 @@ import { AnimatePresence, animate as fmAnimate, motion, useMotionValue, useTrans
 import { Button } from '../../components/Button';
 import { Badge } from '../../components/Card';
 import { Stepper } from '../../components/Stepper';
+import { CompassArrow } from '../../components/CompassArrow';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useAnimatedNumber } from '../../hooks/useAnimatedNumber';
 import type { LatLng } from '../../utils/distance';
@@ -221,6 +222,10 @@ export function JourneyMap({
   const animatedDistance = useAnimatedNumber(distanceMeters);
   const stepLabels = [t('journeyStarted'), t('onTheWay'), t('almostThere'), t('arrivedAtDua')];
 
+  const bearingToDestination = userPosition
+    ? bearingBetween([userPosition.longitude, userPosition.latitude], [destination.longitude, destination.latitude])
+    : null;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -277,6 +282,7 @@ export function JourneyMap({
               )}
             </AnimatePresence>
           </div>
+          <CompassArrow bearingToDestination={bearingToDestination} />
         </div>
       </motion.div>
 
