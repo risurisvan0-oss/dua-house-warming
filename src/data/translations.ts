@@ -87,6 +87,18 @@ export const translations = {
     ml: 'ഉദാ. വെജിറ്റേറിയൻ, കക്കയിറച്ചി ഒഴിവാക്കുക',
   },
   guestsConfirmedSoFar: { en: 'guests confirmed so far', ml: 'അതിഥികൾ ഇതുവരെ സ്ഥിരീകരിച്ചു' },
+  gotIt: { en: 'Got it', ml: 'മനസ്സിലായി' },
+  installAppTitle: { en: 'Add DUA to your home screen', ml: 'DUA നിങ്ങളുടെ ഹോം സ്ക്രീനിൽ ചേർക്കുക' },
+  installAppBodyAndroid: {
+    en: 'Install this invitation as an app for quick, offline access any time before the big day.',
+    ml: 'ഈ ക്ഷണക്കത്ത് ഒരു ആപ്പ് ആയി ഇൻസ്റ്റാൾ ചെയ്യുക, ഓഫ്‌ലൈനിലും വേഗത്തിൽ തുറക്കാം.',
+  },
+  installAppBodyIos: {
+    en: 'Tap the Share icon below, then "Add to Home Screen", for quick, offline access any time before the big day.',
+    ml: 'താഴെയുള്ള Share ഐക്കൺ അമർത്തി "Add to Home Screen" തിരഞ്ഞെടുക്കുക — ഓഫ്‌ലൈനിലും വേഗത്തിൽ തുറക്കാം.',
+  },
+  installNow: { en: 'Install', ml: 'ഇൻസ്റ്റാൾ ചെയ്യുക' },
+  maybeLater: { en: 'Maybe Later', ml: 'പിന്നീട്' },
 
   // ---- Location permission ----
   journeyExperience: { en: 'Journey Experience', ml: 'യാത്രാ അനുഭവം' },

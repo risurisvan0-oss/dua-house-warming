@@ -2,7 +2,7 @@ import { getEffectiveEventConfig } from './adminConfigService';
 import type { RsvpStatus } from './storageService';
 
 export interface HostNotification {
-  type: 'rsvp' | 'guestbook';
+  type: 'rsvp' | 'guestbook' | 'arrival';
   guestId: string;
   guestName: string;
   rsvpStatus?: RsvpStatus;

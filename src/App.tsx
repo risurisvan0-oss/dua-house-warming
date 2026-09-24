@@ -12,6 +12,9 @@ import { updateAppBadge } from './utils/appBadge';
 import { eventStartDateTime } from './utils/dateTime';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { BottomSheet } from './components/BottomSheet';
+import { AnnouncementBanner } from './components/AnnouncementBanner';
+import { InstallAppBanner } from './components/InstallAppBanner';
+import { useGuestCount } from './hooks/useGuestCount';
 import { DoorsOpening } from './features/invitation/DoorsOpening';
 import { StoryPage } from './features/invitation/StoryPage';
 import { ContactButtons } from './features/invitation/ContactButtons';
@@ -64,6 +67,7 @@ function GuestApp() {
   const [shareToast, setShareToast] = useState(false);
   const journey = useJourney();
   const eventConfig = useEventConfig();
+  const guestCount = useGuestCount();
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -129,9 +133,12 @@ function GuestApp() {
   };
 
   const showTopBar = !['opening', 'map', 'arrival'].includes(screen);
+  const showInstallPrompt = !['opening', 'map', 'arrival'].includes(screen);
 
   return (
     <div className="relative">
+      <AnnouncementBanner text={guestCount?.announcement} />
+
       {showTopBar && (
         <div className="fixed top-[max(0.75rem,env(safe-area-inset-top))] inset-x-4 z-20 flex justify-between">
           <LanguageSwitcher />
@@ -203,6 +210,8 @@ function GuestApp() {
       {!['opening', 'arrival'].includes(screen) && (
         <AskDuaWidget onStartJourney={() => setScreen('permission')} />
       )}
+
+      {showInstallPrompt && <InstallAppBanner />}
 
       <BottomSheet open={contactOpen} onClose={() => setContactOpen(false)} title={t('contactHosts')}>
         <ContactButtons />

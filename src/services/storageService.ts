@@ -28,6 +28,8 @@ const KEYS = {
   guests: 'dua:guests',
   guestNote: 'dua:guestNote',
   dietaryNotes: 'dua:dietaryNotes',
+  dismissedAnnouncement: 'dua:dismissedAnnouncement',
+  installPromptDismissed: 'dua:installPromptDismissed',
 } as const;
 
 function readRaw(key: string): string | null {
@@ -190,6 +192,23 @@ export const storageService = {
   },
   setDietaryNotes(notes: string): void {
     writeRaw(KEYS.dietaryNotes, notes);
+  },
+
+  /** The exact text of the last live announcement this guest dismissed —
+   * comparing against it (rather than a plain seen/unseen flag) means a
+   * *new* announcement always reappears even if an older one was dismissed. */
+  getDismissedAnnouncement(): string | null {
+    return readRaw(KEYS.dismissedAnnouncement);
+  },
+  setDismissedAnnouncement(text: string): void {
+    writeRaw(KEYS.dismissedAnnouncement, text);
+  },
+
+  hasDismissedInstallPrompt(): boolean {
+    return readRaw(KEYS.installPromptDismissed) === '1';
+  },
+  setInstallPromptDismissed(): void {
+    writeRaw(KEYS.installPromptDismissed, '1');
   },
 
   /**

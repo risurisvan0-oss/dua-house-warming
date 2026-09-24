@@ -173,6 +173,13 @@ that greets that guest by name, plus an optional personal note
 name on the invitation — both are stripped from the URL and saved to that
 guest's device on first open.
 
+The same tool has a **Bulk generate** box: paste one guest per line —
+`Name` or `Name | personal note` — to get every link generated at once,
+each with its own copy button, plus a **Copy All** button that copies
+`Name: link` for every guest as one block of text (handy for pasting into
+a spreadsheet, or working through one by one on WhatsApp). Nothing here
+is saved anywhere; it's regenerated from the pasted list each time.
+
 ## Language
 
 English and Malayalam are both fully supported. Every string lives in
@@ -203,11 +210,19 @@ component. See the next section for a free, optional way to see them live.
 By default, RSVPs and guestbook messages are saved only on each guest's own
 phone (see above) — nobody else can see them. If you want to see them
 yourself as they come in, `src/services/notifyHostService.ts` can send a
-copy of every RSVP and guestbook message to a **free Google Sheet**, with
-no backend, no server, and no cost. It's entirely optional and off by
-default. This same setup also powers the optional "🎉 N guests confirmed
-so far" counter shown on the invitation (`src/services/guestCountService.ts`)
-— skip that part of the script if you don't want the counter.
+copy of every RSVP, guestbook message, **and arrival** (the moment a
+guest's Journey confirms they've reached DUA — not fired by `/admin` demo
+testing) to a **free Google Sheet**, with no backend, no server, and no
+cost. It's entirely optional and off by default. This same setup also
+powers two more optional, purely additive features that read the Sheet
+back:
+
+- the "🎉 N guests confirmed so far" counter on the invitation
+  (`src/services/guestCountService.ts`)
+- the [live announcement banner](#live-announcement-banner) below
+
+Skip either part of the script below if you don't want that feature —
+everything else still works without it.
 
 ### Setup (about 5 minutes, free Google account only)
 
@@ -221,7 +236,7 @@ so far" counter shown on the invitation (`src/services/guestCountService.ts`)
      const data = JSON.parse(e.postData.contents);
      sheet.appendRow([
        new Date(data.timestamp),
-       data.type,
+       data.type, // 'rsvp' | 'guestbook' | 'arrival'
        data.guestName,
        data.rsvpStatus ?? '',
        data.guests ?? '',
@@ -233,15 +248,16 @@ so far" counter shown on the invitation (`src/services/guestCountService.ts`)
      return ContentService.createTextOutput('OK');
    }
 
-   // Powers the optional "N guests confirmed so far" counter on the
-   // invitation. Keeps only each guest's MOST RECENT "yes" RSVP (so
-   // someone who later changes their headcount, or switches to "no",
-   // isn't double-counted) and sums up the party sizes. Delete this
-   // function if you don't want the live counter — everything else
-   // still works without it.
+   // Powers the optional "N guests confirmed so far" counter, and the
+   // optional live announcement banner, on the invitation.
    function doGet() {
-     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+     const ss = SpreadsheetApp.getActiveSpreadsheet();
+     const sheet = ss.getActiveSheet();
      const rows = sheet.getDataRange().getValues();
+
+     // Keeps only each guest's MOST RECENT "yes" RSVP (so someone who
+     // later changes their headcount, or switches to "no", isn't
+     // double-counted) and sums up the party sizes.
      const latestByGuest = {};
      rows.forEach((row) => {
        const [timestamp, type, , rsvpStatus, guests, , , , guestId] = row;
@@ -254,8 +270,15 @@ so far" counter shown on the invitation (`src/services/guestCountService.ts`)
      const confirmedGuests = Object.values(latestByGuest)
        .filter((g) => g.rsvpStatus === 'yes')
        .reduce((sum, g) => sum + (Number(g.guests) || 0), 0);
+
+     // Optional: an "Announcement" tab, cell A1 = your message. Leave the
+     // tab out (or A1 empty) to send no announcement — see "Live
+     // announcement banner" below.
+     const announcementSheet = ss.getSheetByName('Announcement');
+     const announcement = announcementSheet ? String(announcementSheet.getRange('A1').getValue() || '') : '';
+
      return ContentService
-       .createTextOutput(JSON.stringify({ confirmedGuests }))
+       .createTextOutput(JSON.stringify({ confirmedGuests, announcement }))
        .setMimeType(ContentService.MimeType.JSON);
    }
    ```
@@ -268,11 +291,11 @@ so far" counter shown on the invitation (`src/services/guestCountService.ts`)
    paste it into `/admin` → Event Settings → **Host Notifications Webhook
    URL** to try it first without redeploying.
 
-From then on, every RSVP (including headcount and dietary-note changes)
-and every guestbook message appends a row to that Sheet — open it on your
-phone or laptop any time to see responses live, with no dashboard, login,
-or app to build. Leaving the field blank (the default) sends nothing
-anywhere.
+From then on, every RSVP (including headcount and dietary-note changes),
+every arrival, and every guestbook message appends a row to that Sheet —
+open it on your phone or laptop any time to see responses live, with no
+dashboard, login, or app to build. Leaving the field blank (the default)
+sends nothing anywhere.
 
 Because Apps Script Web Apps don't return browser-readable CORS headers
 for POST, that part uses a fire-and-forget `no-cors` request — it never
@@ -289,6 +312,20 @@ Sheet and use **File → Download → Comma-separated values (.csv)**. Do
 this any time to get a spreadsheet snapshot of every response so far, or
 share the Sheet itself (**Share** button) with anyone who's helping with
 the guest list.
+
+## Live announcement banner
+
+Requires the `hostNotifyWebhookUrl` setup above. Lets you push a
+last-minute update to every guest currently on the invitation — e.g.
+"Starting 30 minutes late" — **without redeploying the app**.
+
+In the same Google Sheet, add a second tab named exactly `Announcement`
+and put your message in cell `A1`. Within a few seconds of a guest
+loading (or reopening) the invitation, `src/components/AnnouncementBanner.tsx`
+shows it as a dismissible banner at the top of the screen. Clear cell A1
+(or delete the tab) to stop showing it. A guest who dismisses one message
+will still see a *different* later message — dismissal is remembered
+per exact text, not as a one-time "seen it" flag.
 
 ## Privacy & geolocation safety
 
@@ -309,6 +346,14 @@ first time a guest visits the map, rather than bloating the initial
 install. Map tiles and OSRM routing are always fetched live and never
 cached — if they're unreachable, the in-app fallback messages ("map/route
 is taking a moment to load ❤️") take over instead of a broken PWA cache.
+
+Being installable doesn't mean guests will think to install it, so
+`src/components/InstallAppBanner.tsx` shows a one-time, dismissible nudge
+once the app is actually installable: a real **Install** button on
+Android/Chrome (via the native `beforeinstallprompt` event), or short
+"Tap Share → Add to Home Screen" steps on iOS Safari, which never fires
+that event. Hidden entirely once the app is already running installed,
+or once a guest dismisses it.
 
 The app is **not** installation-gated — it works fully the moment the
 WhatsApp link is opened in a normal mobile browser tab.
@@ -373,8 +418,13 @@ src/
     storageService.ts      # typed localStorage/sessionStorage access
     adminConfigService.ts  # local /admin Event Settings overrides
     notifyHostService.ts   # optional fire-and-forget webhook to a Google Sheet
-    guestCountService.ts   # optional read-back of the live confirmed-guest count
+    guestCountService.ts   # optional read-back of the live guest count + announcement
+  utils/
+    pwaInstall.ts           # beforeinstallprompt/iOS/standalone detection
   hooks/                  # useLanguage, useEventConfig, useJourney, useGuestCount
+  components/
+    AnnouncementBanner.tsx  # optional live "host update" banner
+    InstallAppBanner.tsx    # one-time "add to home screen" nudge
   features/
     invitation/           # opening, welcome, RSVP, event details, contact
     journey/               # intro, permission, arrival reveal, event mode, thank you

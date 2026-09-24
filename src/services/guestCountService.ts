@@ -3,6 +3,12 @@ import { getEffectiveEventConfig } from './adminConfigService';
 export interface GuestCountSnapshot {
   /** Total headcount across every "yes" RSVP (sum of party sizes). */
   confirmedGuests: number;
+  /**
+   * An optional host-written last-minute update (e.g. "Starting 30
+   * minutes late"), read from the same Sheet — see "Live announcement
+   * banner" in the README. Undefined/empty when there's nothing to show.
+   */
+  announcement?: string;
 }
 
 /**
@@ -27,7 +33,11 @@ export async function fetchGuestCount(): Promise<GuestCountSnapshot | null> {
     const data: unknown = await res.json();
     const confirmedGuests = (data as { confirmedGuests?: unknown })?.confirmedGuests;
     if (typeof confirmedGuests !== 'number' || !Number.isFinite(confirmedGuests)) return null;
-    return { confirmedGuests };
+    const announcement = (data as { announcement?: unknown })?.announcement;
+    return {
+      confirmedGuests,
+      announcement: typeof announcement === 'string' && announcement.trim() ? announcement.trim() : undefined,
+    };
   } catch {
     return null;
   }

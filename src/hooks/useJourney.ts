@@ -13,6 +13,7 @@ import {
 import type { GeolocationErrorReason } from '../services/geolocationService';
 import { requestCurrentPosition, startJourneyWatch } from '../services/geolocationService';
 import { storageService } from '../services/storageService';
+import { notifyHost } from '../services/notifyHostService';
 import { subscribeDemoChannel } from '../utils/demoChannel';
 import type { TranslationKey } from '../data/translations';
 
@@ -215,12 +216,23 @@ export function useJourney() {
       // A tactile "you're here" cue, once, the moment arrival is confirmed.
       // No-op on browsers/devices without vibration support (e.g. iOS Safari).
       navigator.vibrate?.([160, 90, 160]);
+      // Let the host know, in real time, that this guest has actually
+      // arrived (as opposed to just RSVP'd) — handy for seating/serving.
+      // Demo-triggered arrivals (from /admin) are excluded so testing the
+      // flow doesn't spam the host's Sheet.
+      if (!state.isDemo) {
+        notifyHost({
+          type: 'arrival',
+          guestId: storageService.getGuestId(),
+          guestName: storageService.getGuestName() ?? 'Guest',
+        });
+      }
     }
     if (state.journeyState === 'DEPARTED' && !storageService.getDepartedAt()) {
       storageService.setDepartedAt(Date.now());
     }
     storageService.setAwayStreakStartedAt(state.awayStreakStartedAt);
-  }, [state.journeyState, state.awayStreakStartedAt]);
+  }, [state.journeyState, state.awayStreakStartedAt, state.isDemo]);
 
   const start = useCallback(async () => {
     if (!hasCoordinates(getEffectiveEventConfig())) {
