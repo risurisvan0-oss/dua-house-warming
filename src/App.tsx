@@ -11,6 +11,7 @@ import { shareInvitation } from './utils/contact';
 import { updateAppBadge } from './utils/appBadge';
 import { eventStartDateTime } from './utils/dateTime';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
+import { TextSizeToggle } from './components/TextSizeToggle';
 import { BottomSheet } from './components/BottomSheet';
 import { AnnouncementBanner } from './components/AnnouncementBanner';
 import { InstallAppBanner } from './components/InstallAppBanner';
@@ -141,7 +142,10 @@ function GuestApp() {
 
       {showTopBar && (
         <div className="fixed top-[max(0.75rem,env(safe-area-inset-top))] inset-x-4 z-20 flex justify-between">
-          <LanguageSwitcher />
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <TextSizeToggle />
+          </div>
           <button
             type="button"
             onClick={handleShare}

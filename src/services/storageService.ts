@@ -33,6 +33,7 @@ const KEYS = {
   wantsEventDayReminder: 'dua:wantsEventDayReminder',
   eventDayReminderShownOn: 'dua:eventDayReminderShownOn',
   guestNames: 'dua:guestNames',
+  largeText: 'dua:largeText',
 } as const;
 
 function readRaw(key: string): string | null {
@@ -236,6 +237,14 @@ export const storageService = {
   },
   setGuestNames(names: string): void {
     writeRaw(KEYS.guestNames, names);
+  },
+
+  getLargeText(): boolean {
+    return readRaw(KEYS.largeText) === '1';
+  },
+  setLargeText(large: boolean): void {
+    if (large) writeRaw(KEYS.largeText, '1');
+    else removeRaw(KEYS.largeText);
   },
 
   /**

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { HomeIllustration } from '../../components/HomeIllustration';
 import { Card } from '../../components/Card';
+import { Button } from '../../components/Button';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useEventConfig } from '../../hooks/useEventConfig';
 import { formatEventTimeRange } from '../../utils/dateTime';
@@ -43,6 +44,13 @@ export function EventModePage() {
       )}
 
       <ArrivalPostcardButton />
+
+      {eventConfig.photoAlbumUrl && (
+        <a href={eventConfig.photoAlbumUrl} target="_blank" rel="noreferrer" className="w-full max-w-sm mt-3">
+          <Button variant="outline" fullWidth>{t('sharePhotos')}</Button>
+          <p className="mt-2 text-xs text-charcoal/50">{t('sharePhotosHint')}</p>
+        </a>
+      )}
     </motion.div>
   );
 }

@@ -9,6 +9,7 @@ import { useLanguage } from '../../hooks/useLanguage';
 import { useWeather } from '../../hooks/useWeather';
 import { useEventDayForecast } from '../../hooks/useEventDayForecast';
 import { useEventDayReminder } from '../../hooks/useEventDayReminder';
+import { usePrayerTimes } from '../../hooks/usePrayerTimes';
 import { useGuestCount } from '../../hooks/useGuestCount';
 import { storageService, type RsvpStatus } from '../../services/storageService';
 import { playChime } from '../../utils/chime';
@@ -37,6 +38,7 @@ export function StoryPage({
   const eventDayForecast = useEventDayForecast(eventConfig);
   const guestCount = useGuestCount();
   const reminder = useEventDayReminder(eventConfig, language);
+  const prayerTimes = usePrayerTimes(eventConfig);
   const [guestNames, setGuestNames] = useState(storageService.getGuestNames());
   const guestName = storageService.getGuestName();
   const guestNote = storageService.getGuestNote();
@@ -214,6 +216,22 @@ export function StoryPage({
             </p>
           </div>
         </motion.div>
+        {prayerTimes && (
+          <motion.div {...reveal} className="mt-3 rounded-2xl border border-emerald/25 bg-ivory p-4">
+            <p className="text-[10.5px] uppercase tracking-[0.2em] text-gold-deep mb-1.5">🕌 {t('prayerTimesAtDua')}</p>
+            <div className="flex gap-5 text-sm text-forest">
+              <span>{t('dhuhr')}: {prayerTimes.dhuhr}</span>
+              <span>{t('asr')}: {prayerTimes.asr}</span>
+            </div>
+          </motion.div>
+        )}
+        {eventConfig.travelInfo && (
+          <motion.div {...reveal} className="mt-3 rounded-2xl border border-emerald/25 bg-ivory p-4 text-left">
+            <p className="text-[10.5px] uppercase tracking-[0.2em] text-gold-deep mb-1.5">{t('travellingFromAfar')}</p>
+            <p className="text-sm text-forest">✈️ {t('nearestAirportLabel')}: {eventConfig.travelInfo.nearestAirport}</p>
+            <p className="mt-1 text-sm text-forest">🚉 {t('nearestStationLabel')}: {eventConfig.travelInfo.nearestRailwayStation}</p>
+          </motion.div>
+        )}
         {weather && (
           <motion.p {...reveal} className="mt-3 rounded-2xl border border-emerald/25 bg-ivory px-4 py-3 text-[13px] text-forest">
             {t('weatherAtDua')}: {weather.temperatureCelsius}°C, {weather.description}

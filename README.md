@@ -195,6 +195,40 @@ does two different things:
   — the tip only appears once the event date comes within that window,
   automatically, with no action needed.
 
+## Prayer times
+
+`src/services/prayerTimesService.ts` (free, no key,
+[Aladhan API](https://aladhan.com/prayer-times-api)) shows Dhuhr and Asr
+prayer times at DUA's coordinates on the event date, since the 11 AM–4 PM
+window typically spans both. Unlike weather, prayer times are
+astronomically calculable for any date — this works today even though
+DUA is over a year out. Uses calculation method 1 (University of Islamic
+Sciences, Karachi), the common convention across South Asia; change the
+`method` parameter in that file if your local convention differs.
+
+## Travelling from afar
+
+Setting `travelInfo` in `src/config/event.ts` (or `/admin` → Event
+Settings) — `{ nearestAirport, nearestRailwayStation }` — shows a
+"Travelling From Afar?" card for extended family coming from outside
+Kerala or abroad. Leave it `null` (the default) to skip entirely.
+
+## Shared photo album
+
+Setting `photoAlbumUrl` in `src/config/event.ts` (or `/admin` → Event
+Settings) to a Google Photos/Drive (or any) shared-album link shows a
+"📸 Share Your Photos" prompt on the Event Mode screen once a guest has
+arrived, so everyone's pictures from the day end up in one place. Leave
+it `null` (the default) to skip entirely.
+
+## Larger text
+
+A small "A+" toggle next to the language switcher scales the whole
+page's root font size (persisted per device via `localStorage`) — since
+every size in this app uses Tailwind's default rem-based scale, this
+grows every piece of text and spacing proportionally with no
+per-component work. For older relatives who find the default size small.
+
 ## Day-of programme
 
 Setting `scheduleItems` in `src/config/event.ts` (a list of
@@ -451,6 +485,7 @@ src/
     mapService.ts          # MapLibre init, markers, route drawing
     journeyService.ts      # pure distance/arrival/departure state logic
     weatherService.ts      # live conditions + event-day forecast (Open-Meteo)
+    prayerTimesService.ts  # Dhuhr/Asr times at DUA (Aladhan API)
     storageService.ts      # typed localStorage/sessionStorage access
     adminConfigService.ts  # local /admin Event Settings overrides
     notifyHostService.ts   # optional fire-and-forget webhook to a Google Sheet
@@ -459,7 +494,8 @@ src/
     pwaInstall.ts           # beforeinstallprompt/iOS/standalone detection
     notifications.ts        # local "remind me on the day" notification helper
   hooks/                  # useLanguage, useEventConfig, useJourney, useGuestCount,
-                           # useEventDayForecast, useEventDayReminder
+                           # useEventDayForecast, useEventDayReminder, usePrayerTimes,
+                           # useTextScale
   features/
     invitation/           # opening, welcome, RSVP, event details, contact
     journey/               # intro, permission, arrival reveal, event mode, thank you
@@ -468,7 +504,7 @@ src/
     faq/                    # Ask DUA floating widget
     admin/                  # /admin dashboard, demo controls, settings form
   components/             # Button, Card, BottomSheet, LanguageSwitcher, HomeIllustration,
-                           # AnnouncementBanner, InstallAppBanner
+                           # AnnouncementBanner, InstallAppBanner, TextSizeToggle
   sw.ts                   # custom service worker (injectManifest)
 ```
 

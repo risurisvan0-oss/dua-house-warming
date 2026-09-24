@@ -193,6 +193,42 @@ export function EventSettingsForm() {
             </p>
           )}
         </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Nearest Airport (optional)">
+            <input
+              className={inputClass}
+              value={form.travelInfo?.nearestAirport ?? ''}
+              placeholder="e.g. Calicut Intl. (CCJ), ~45 min"
+              onChange={(e) => {
+                const nearestAirport = e.target.value;
+                const nearestRailwayStation = form.travelInfo?.nearestRailwayStation ?? '';
+                update('travelInfo', nearestAirport || nearestRailwayStation ? { nearestAirport, nearestRailwayStation } : null);
+              }}
+            />
+          </Field>
+          <Field label="Nearest Railway Station (optional)">
+            <input
+              className={inputClass}
+              value={form.travelInfo?.nearestRailwayStation ?? ''}
+              placeholder="e.g. Tirur, ~20 min"
+              onChange={(e) => {
+                const nearestRailwayStation = e.target.value;
+                const nearestAirport = form.travelInfo?.nearestAirport ?? '';
+                update('travelInfo', nearestAirport || nearestRailwayStation ? { nearestAirport, nearestRailwayStation } : null);
+              }}
+            />
+          </Field>
+        </div>
+        <Field label="Shared Photo Album URL (optional)">
+          <input
+            className={inputClass}
+            value={form.photoAlbumUrl ?? ''}
+            placeholder="https://photos.app.goo.gl/..."
+            onChange={(e) => update('photoAlbumUrl', e.target.value.trim() === '' ? null : e.target.value.trim())}
+          />
+        </Field>
+
         <div className="grid grid-cols-3 gap-3">
           <Field label="Arrival Radius (m)">
             <input

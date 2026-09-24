@@ -53,6 +53,19 @@ export interface EventConfig {
    */
   scheduleItems: { time: string; titleEn: string; titleMl: string }[];
 
+  /**
+   * OPTIONAL. Shown as a "Travelling From Afar?" card for extended family
+   * coming from outside Kerala or abroad. Leave null to skip entirely.
+   */
+  travelInfo: { nearestAirport: string; nearestRailwayStation: string } | null;
+
+  /**
+   * OPTIONAL. A shared Google Photos/Drive album link — shown as a
+   * "Share Your Photos" prompt once a guest has arrived. Leave null to
+   * skip entirely.
+   */
+  photoAlbumUrl: string | null;
+
   welcomeMessageEn: string;
   welcomeMessageMl: string;
   arrivalMessageEn: string;
@@ -87,6 +100,9 @@ export const eventConfig: EventConfig = {
     { time: '12:30 PM', titleEn: 'Lunch', titleMl: 'ഉച്ചഭക്ഷണം' },
     { time: '4:00 PM', titleEn: 'Programme concludes', titleMl: 'പരിപാടി അവസാനിക്കുന്നു' },
   ],
+
+  travelInfo: null,
+  photoAlbumUrl: null,
 
   welcomeMessageEn:
     'With the blessings of Allah, we are beginning a beautiful new chapter in our new home. We would be delighted to have you with us as we celebrate this special day.',

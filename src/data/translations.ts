@@ -108,6 +108,18 @@ export const translations = {
   reminderOnCopy: { en: "🔔 We'll remind you on the day", ml: '🔔 ഞങ്ങൾ ആ ദിവസം ഓർമ്മിപ്പിക്കാം' },
   guestNamesOptional: { en: 'Names of those joining you (optional)', ml: 'കൂടെ വരുന്നവരുടെ പേരുകൾ (ഓപ്ഷണൽ)' },
   guestNamesPlaceholder: { en: 'e.g. Spouse, 2 kids', ml: 'ഉദാ. ഭാര്യ/ഭർത്താവ്, 2 കുട്ടികൾ' },
+  toggleTextSize: { en: 'Larger text', ml: 'വലിയ അക്ഷരം' },
+  prayerTimesAtDua: { en: 'Prayer Times at DUA', ml: 'DUA-യിലെ നമസ്കാര സമയങ്ങൾ' },
+  dhuhr: { en: 'Dhuhr', ml: 'ളുഹർ' },
+  asr: { en: 'Asr', ml: 'അസ്ർ' },
+  travellingFromAfar: { en: 'Travelling From Afar?', ml: 'ദൂരെ നിന്ന് വരുന്നുണ്ടോ?' },
+  nearestAirportLabel: { en: 'Nearest Airport', ml: 'അടുത്തുള്ള വിമാനത്താവളം' },
+  nearestStationLabel: { en: 'Nearest Railway Station', ml: 'അടുത്തുള്ള റെയിൽവേ സ്റ്റേഷൻ' },
+  sharePhotos: { en: '📸 Share Your Photos', ml: '📸 നിങ്ങളുടെ ഫോട്ടോകൾ പങ്കിടുക' },
+  sharePhotosHint: {
+    en: "Add your pictures from today to our shared album so everyone can relive it.",
+    ml: 'ഇന്നത്തെ നിങ്ങളുടെ ചിത്രങ്ങൾ ഞങ്ങളുടെ പങ്കിട്ട ആൽബത്തിൽ ചേർക്കുക.',
+  },
 
   // ---- Location permission ----
   journeyExperience: { en: 'Journey Experience', ml: 'യാത്രാ അനുഭവം' },
