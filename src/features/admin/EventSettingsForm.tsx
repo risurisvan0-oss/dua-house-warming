@@ -228,6 +228,36 @@ export function EventSettingsForm() {
             onChange={(e) => update('photoAlbumUrl', e.target.value.trim() === '' ? null : e.target.value.trim())}
           />
         </Field>
+        <Field label="Meet the Hosts — English bio (optional)">
+          <textarea
+            rows={2}
+            className={inputClass}
+            value={form.hostsBioEn ?? ''}
+            onChange={(e) => update('hostsBioEn', e.target.value.trim() === '' ? null : e.target.value)}
+          />
+        </Field>
+        <Field label="Meet the Hosts — Malayalam bio (optional)">
+          <textarea
+            rows={2}
+            className={inputClass}
+            value={form.hostsBioMl ?? ''}
+            onChange={(e) => update('hostsBioMl', e.target.value.trim() === '' ? null : e.target.value)}
+          />
+        </Field>
+        <Field label="Landmark Note — English (optional, e.g. 'Look for the blue gate')">
+          <input
+            className={inputClass}
+            value={form.arrivalLandmarkNoteEn ?? ''}
+            onChange={(e) => update('arrivalLandmarkNoteEn', e.target.value.trim() === '' ? null : e.target.value)}
+          />
+        </Field>
+        <Field label="Landmark Note — Malayalam (optional)">
+          <input
+            className={inputClass}
+            value={form.arrivalLandmarkNoteMl ?? ''}
+            onChange={(e) => update('arrivalLandmarkNoteMl', e.target.value.trim() === '' ? null : e.target.value)}
+          />
+        </Field>
 
         <div className="grid grid-cols-3 gap-3">
           <Field label="Arrival Radius (m)">

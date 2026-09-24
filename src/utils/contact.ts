@@ -30,6 +30,21 @@ export function directionsLink(): string {
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
 }
 
+/**
+ * A downloadable vCard for the host, so their number goes straight into
+ * the guest's phone contacts rather than just being tap-to-call. Built
+ * as a `data:` URI (no Blob/object-URL cleanup needed) — small enough
+ * that every browser handles it fine as a direct download link.
+ */
+export function hostVCardDataUrl(): string {
+  const cfg = getEffectiveEventConfig();
+  const digits = digitsOnly(cfg.phone);
+  const vcard = ['BEGIN:VCARD', 'VERSION:3.0', `FN:${cfg.hostNames}`, `ORG:${cfg.houseName}`, `TEL;TYPE=CELL:+91${digits}`, 'END:VCARD'].join(
+    '\r\n',
+  );
+  return `data:text/vcard;charset=utf-8,${encodeURIComponent(vcard)}`;
+}
+
 export function invitationShareText(link: string): string {
   const cfg = getEffectiveEventConfig();
   return [

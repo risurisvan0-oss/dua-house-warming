@@ -206,6 +206,32 @@ DUA is over a year out. Uses calculation method 1 (University of Islamic
 Sciences, Karachi), the common convention across South Asia; change the
 `method` parameter in that file if your local convention differs.
 
+## Meet the Hosts
+
+Setting `hostsBioEn`/`hostsBioMl` in `src/config/event.ts` (or `/admin` →
+Event Settings) shows a short bio card in the invitation's opening
+chapter — useful for guests who are distant relatives or friends-of-
+friends and may not know Majeed & Kamarunnisa well. `hostsPhotoUrl` adds
+a circular photo alongside it (a path into `public/`, e.g. `/hosts.jpg`,
+or any external image URL). Leave the bio fields null (the default) to
+skip the card entirely.
+
+## Landmark note for the last stretch
+
+Setting `arrivalLandmarkNoteEn`/`arrivalLandmarkNoteMl` in
+`src/config/event.ts` (or `/admin` → Event Settings) — e.g. "Look for
+the blue gate past the mosque" — shows a short note on the Journey map
+once the guest is nearby. Addresses often aren't precise enough on their
+own, even with GPS, especially in rural areas. Leave both null (the
+default) to skip.
+
+## Save the host's contact
+
+The Contact sheet (tap "Contact Hosts" from the invitation) has a
+**💾 Save Contact** button alongside Call/WhatsApp that downloads a
+`.vcf` file, so the host's number goes straight into the guest's phone
+contacts rather than staying tap-to-call only.
+
 ## Travelling from afar
 
 Setting `travelInfo` in `src/config/event.ts` (or `/admin` → Event

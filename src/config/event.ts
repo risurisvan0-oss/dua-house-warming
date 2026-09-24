@@ -66,6 +66,26 @@ export interface EventConfig {
    */
   photoAlbumUrl: string | null;
 
+  /**
+   * OPTIONAL. A short "Meet the Hosts" bio shown in the invitation's
+   * opening chapter — useful for guests who are distant relatives or
+   * friends-of-friends and may not know Majeed & Kamarunnisa well. Leave
+   * both null to skip. `hostsPhotoUrl` can be a path into `public/`
+   * (e.g. `/hosts.jpg`) or any external image URL.
+   */
+  hostsBioEn: string | null;
+  hostsBioMl: string | null;
+  hostsPhotoUrl: string | null;
+
+  /**
+   * OPTIONAL. A short host-written note for the very last stretch (e.g.
+   * "Look for the blue gate past the mosque") — addresses often aren't
+   * precise enough on their own, even with GPS. Shown on the map once
+   * the guest is nearby. Leave both null to skip.
+   */
+  arrivalLandmarkNoteEn: string | null;
+  arrivalLandmarkNoteMl: string | null;
+
   welcomeMessageEn: string;
   welcomeMessageMl: string;
   arrivalMessageEn: string;
@@ -103,6 +123,11 @@ export const eventConfig: EventConfig = {
 
   travelInfo: null,
   photoAlbumUrl: null,
+  hostsBioEn: null,
+  hostsBioMl: null,
+  hostsPhotoUrl: null,
+  arrivalLandmarkNoteEn: null,
+  arrivalLandmarkNoteMl: null,
 
   welcomeMessageEn:
     'With the blessings of Allah, we are beginning a beautiful new chapter in our new home. We would be delighted to have you with us as we celebrate this special day.',

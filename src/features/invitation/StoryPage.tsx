@@ -56,6 +56,7 @@ export function StoryPage({
   const hijri = formatHijriEventDate();
   const isLiveToday = getEventPhase() === 'live';
   const welcome = language === 'en' ? eventConfig.welcomeMessageEn : eventConfig.welcomeMessageMl;
+  const hostsBio = (language === 'en' ? eventConfig.hostsBioEn : eventConfig.hostsBioMl) || undefined;
 
   const chooseRsvp = (status: RsvpStatus) => {
     storageService.setRsvp(status);
@@ -177,6 +178,19 @@ export function StoryPage({
         )}
         <motion.p {...reveal} dir="rtl" className="mt-3 font-display text-2xl text-forest">{bismillahArabic}</motion.p>
         <motion.p {...reveal} className="mt-4 max-w-[19rem] text-[15px] leading-relaxed text-charcoal/80">{welcome}</motion.p>
+        {hostsBio && (
+          <motion.div {...reveal} className="mt-5 flex max-w-[19rem] flex-col items-center gap-2 rounded-2xl border border-emerald/25 bg-ivory p-4">
+            {eventConfig.hostsPhotoUrl && (
+              <img
+                src={eventConfig.hostsPhotoUrl}
+                alt={eventConfig.hostNames}
+                className="h-16 w-16 rounded-full object-cover border-2 border-gold/50"
+              />
+            )}
+            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-gold-deep">{t('meetTheHosts')}</p>
+            <p className="text-sm leading-relaxed text-charcoal/75">{hostsBio}</p>
+          </motion.div>
+        )}
         <div className="flex-1" />
         <button type="button" onClick={() => scrollTo(1)} className="mt-8 flex flex-col items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-charcoal/55">
           {t('scrollToVeranda')}

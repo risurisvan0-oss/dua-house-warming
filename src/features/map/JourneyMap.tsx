@@ -40,6 +40,9 @@ interface JourneyMapProps {
   isNearby: boolean;
   watching: boolean;
   paused: boolean;
+  /** A host-written note for the last stretch (e.g. "Look for the blue
+   * gate past the mosque"), shown once the guest is nearby. Optional. */
+  landmarkNote?: string;
   onStop: () => void;
   onResume: () => void;
   onBack: () => void;
@@ -75,6 +78,7 @@ export function JourneyMap({
   isNearby,
   watching,
   paused,
+  landmarkNote,
   onStop,
   onResume,
   onBack,
@@ -360,6 +364,16 @@ export function JourneyMap({
                   />
                 </div>
               </div>
+            )}
+
+            {isNearby && landmarkNote && (
+              <motion.p
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-3 rounded-xl bg-gold/10 border border-gold-deep/25 px-3 py-2 text-xs text-gold-deep"
+              >
+                {t('landmarkNoteLabel')}: {landmarkNote}
+              </motion.p>
             )}
           </div>
 

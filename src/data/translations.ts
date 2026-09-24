@@ -120,6 +120,9 @@ export const translations = {
     en: "Add your pictures from today to our shared album so everyone can relive it.",
     ml: 'ഇന്നത്തെ നിങ്ങളുടെ ചിത്രങ്ങൾ ഞങ്ങളുടെ പങ്കിട്ട ആൽബത്തിൽ ചേർക്കുക.',
   },
+  saveContact: { en: '💾 Save Contact', ml: '💾 കോൺടാക്റ്റ് സേവ് ചെയ്യുക' },
+  meetTheHosts: { en: 'Meet the Hosts', ml: 'ആതിഥേയരെ പരിചയപ്പെടുക' },
+  landmarkNoteLabel: { en: "📍 Look out for", ml: '📍 ഇത് ശ്രദ്ധിക്കുക' },
 
   // ---- Location permission ----
   journeyExperience: { en: 'Journey Experience', ml: 'യാത്രാ അനുഭവം' },

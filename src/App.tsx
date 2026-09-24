@@ -69,7 +69,8 @@ function GuestApp() {
   const journey = useJourney();
   const eventConfig = useEventConfig();
   const guestCount = useGuestCount();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const landmarkNote = (language === 'en' ? eventConfig.arrivalLandmarkNoteEn : eventConfig.arrivalLandmarkNoteMl) || undefined;
 
   useEffect(() => {
     storageService.markInvitationOpened();
@@ -197,6 +198,7 @@ function GuestApp() {
               isNearby={journey.isNearby}
               watching={journey.watching}
               paused={journey.paused}
+              landmarkNote={landmarkNote}
               onStop={journey.stop}
               onResume={journey.resume}
               onBack={handleBackFromMap}
