@@ -45,6 +45,14 @@ export interface EventConfig {
    */
   rsvpByDate: string | null;
 
+  /**
+   * OPTIONAL. The day-of programme, shown as a timeline on the Event Mode
+   * screen once a guest has arrived. Each item is a rough time label
+   * (already-formatted text, not parsed — e.g. "11:00 AM") plus EN/ML
+   * titles. Leave as an empty array to skip the schedule entirely.
+   */
+  scheduleItems: { time: string; titleEn: string; titleMl: string }[];
+
   welcomeMessageEn: string;
   welcomeMessageMl: string;
   arrivalMessageEn: string;
@@ -72,6 +80,13 @@ export const eventConfig: EventConfig = {
 
   hostNotifyWebhookUrl: null,
   rsvpByDate: null,
+
+  scheduleItems: [
+    { time: '11:00 AM', titleEn: 'Guests welcomed at the gate', titleMl: 'ഗേറ്റിൽ അതിഥികളെ സ്വാഗതം ചെയ്യുന്നു' },
+    { time: '11:30 AM', titleEn: 'Majlis & Dua', titleMl: 'മജ്‌ലിസും ദുആയും' },
+    { time: '12:30 PM', titleEn: 'Lunch', titleMl: 'ഉച്ചഭക്ഷണം' },
+    { time: '4:00 PM', titleEn: 'Programme concludes', titleMl: 'പരിപാടി അവസാനിക്കുന്നു' },
+  ],
 
   welcomeMessageEn:
     'With the blessings of Allah, we are beginning a beautiful new chapter in our new home. We would be delighted to have you with us as we celebrate this special day.',

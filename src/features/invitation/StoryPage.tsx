@@ -7,6 +7,8 @@ import { bismillahArabic } from '../../data/translations';
 import { useEventConfig } from '../../hooks/useEventConfig';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useWeather } from '../../hooks/useWeather';
+import { useEventDayForecast } from '../../hooks/useEventDayForecast';
+import { useEventDayReminder } from '../../hooks/useEventDayReminder';
 import { useGuestCount } from '../../hooks/useGuestCount';
 import { storageService, type RsvpStatus } from '../../services/storageService';
 import { playChime } from '../../utils/chime';
@@ -32,7 +34,10 @@ export function StoryPage({
   const { t, language } = useLanguage();
   const eventConfig = useEventConfig();
   const weather = useWeather(eventConfig);
+  const eventDayForecast = useEventDayForecast(eventConfig);
   const guestCount = useGuestCount();
+  const reminder = useEventDayReminder(eventConfig, language);
+  const [guestNames, setGuestNames] = useState(storageService.getGuestNames());
   const guestName = storageService.getGuestName();
   const guestNote = storageService.getGuestNote();
   const [rsvp, setRsvp] = useState<RsvpStatus | null>(storageService.getRsvp());
@@ -64,6 +69,7 @@ export function StoryPage({
       rsvpStatus: status,
       guests: status === 'yes' ? guests : undefined,
       dietaryNotes: status === 'yes' ? dietaryNotes || undefined : undefined,
+      guestNames: status === 'yes' ? guestNames || undefined : undefined,
     });
   };
   const changeGuests = (next: number) => {
@@ -79,6 +85,7 @@ export function StoryPage({
         rsvpStatus: 'yes',
         guests: clamped,
         dietaryNotes: dietaryNotes || undefined,
+        guestNames: guestNames || undefined,
       });
     }
   };
@@ -92,6 +99,21 @@ export function StoryPage({
         rsvpStatus: 'yes',
         guests,
         dietaryNotes: dietaryNotes || undefined,
+        guestNames: guestNames || undefined,
+      });
+    }
+  };
+  const handleGuestNamesBlur = () => {
+    storageService.setGuestNames(guestNames);
+    if (rsvp === 'yes') {
+      notifyHost({
+        type: 'rsvp',
+        guestId: storageService.getGuestId(),
+        guestName: guestName ?? 'Guest',
+        rsvpStatus: 'yes',
+        guests,
+        dietaryNotes: dietaryNotes || undefined,
+        guestNames: guestNames || undefined,
       });
     }
   };
@@ -197,6 +219,11 @@ export function StoryPage({
             {t('weatherAtDua')}: {weather.temperatureCelsius}°C, {weather.description}
           </motion.p>
         )}
+        {eventDayForecast?.isRainy && (
+          <motion.p {...reveal} className="mt-2 rounded-2xl border border-gold-deep/25 bg-gold/10 px-4 py-3 text-[13px] text-gold-deep">
+            {t('rainExpectedTip')}
+          </motion.p>
+        )}
 
         <motion.div {...reveal} className="mt-6"><CountdownTimer /></motion.div>
 
@@ -206,6 +233,17 @@ export function StoryPage({
           </a>
           <Button variant="outline" className="flex-1 !px-2 text-[13px]" onClick={onOpenContact}>{t('contactHosts')}</Button>
         </motion.div>
+        {reminder.supported && (
+          <motion.div {...reveal} className="mt-2.5">
+            {reminder.optedIn ? (
+              <p className="text-center text-xs text-emerald">{t('reminderOnCopy')}</p>
+            ) : (
+              <Button variant="ghost" fullWidth className="!py-2 text-[13px]" onClick={reminder.optIn}>
+                {t('remindMeOnTheDay')}
+              </Button>
+            )}
+          </motion.div>
+        )}
       </motion.section>
 
       {/* III. Majlis */}
@@ -270,6 +308,21 @@ export function StoryPage({
           </div>
         </div>
 
+        {rsvp === 'yes' && guests > 1 && (
+          <motion.div {...reveal} className="mt-4">
+            <label htmlFor="guest-names" className="block text-xs font-medium text-cream/60 mb-1.5">
+              {t('guestNamesOptional')}
+            </label>
+            <input
+              id="guest-names"
+              value={guestNames}
+              onChange={(e) => setGuestNames(e.target.value)}
+              onBlur={handleGuestNamesBlur}
+              placeholder={t('guestNamesPlaceholder')}
+              className="w-full rounded-xl border border-[#e8c77a]/40 bg-transparent px-4 py-3 text-[15px] text-cream placeholder:text-cream/40 outline-none focus:border-[#e8c77a]"
+            />
+          </motion.div>
+        )}
         {rsvp === 'yes' && (
           <motion.div {...reveal} className="mt-4">
             <label htmlFor="dietary-notes" className="block text-xs font-medium text-cream/60 mb-1.5">

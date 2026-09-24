@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { HomeIllustration } from '../../components/HomeIllustration';
+import { Card } from '../../components/Card';
 import { useLanguage } from '../../hooks/useLanguage';
 import { useEventConfig } from '../../hooks/useEventConfig';
 import { formatEventTimeRange } from '../../utils/dateTime';
@@ -7,7 +8,7 @@ import { ArrivalPostcardButton } from './ArrivalPostcardButton';
 import { JourneyProgressCard } from './JourneyProgressCard';
 
 export function EventModePage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const eventConfig = useEventConfig();
 
   return (
@@ -26,6 +27,20 @@ export function EventModePage() {
       <div className="w-full max-w-sm mb-6">
         <JourneyProgressCard journeyState="ARRIVED" />
       </div>
+
+      {eventConfig.scheduleItems.length > 0 && (
+        <Card className="w-full max-w-sm mb-6 text-left">
+          <p className="text-xs font-semibold uppercase tracking-wide text-gold-deep mb-3">{t('todaysProgramme')}</p>
+          <ol className="space-y-3">
+            {eventConfig.scheduleItems.map((item, i) => (
+              <li key={i} className="flex gap-3">
+                <span className="w-[4.5rem] shrink-0 text-xs font-semibold text-forest/60">{item.time}</span>
+                <span className="text-sm text-charcoal/80">{language === 'en' ? item.titleEn : item.titleMl}</span>
+              </li>
+            ))}
+          </ol>
+        </Card>
+      )}
 
       <ArrivalPostcardButton />
     </motion.div>

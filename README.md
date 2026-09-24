@@ -157,10 +157,11 @@ that every guest sees, edit `src/config/event.ts` directly and redeploy.
 ## RSVP & personalisation
 
 The invitation's "Majlis" chapter (`src/features/invitation/StoryPage.tsx`)
-collects a Yes/Maybe/No RSVP, a headcount (1–8, editable any time), and an
-optional dietary-preferences note — all saved locally per guest
-(`storageService.ts`) and, if configured, forwarded to the host's Google
-Sheet (see [Seeing RSVPs as a host](#seeing-rsvps-as-a-host)).
+collects a Yes/Maybe/No RSVP, a headcount (1–8, editable any time), an
+optional list of who's coming with them (free text, shown once headcount
+is above 1), and an optional dietary-preferences note — all saved locally
+per guest (`storageService.ts`) and, if configured, forwarded to the
+host's Google Sheet (see [Seeing RSVPs as a host](#seeing-rsvps-as-a-host)).
 
 Setting `rsvpByDate` in `src/config/event.ts` (or `/admin` → Event
 Settings) shows a gentle "Kindly RSVP by …" reminder to guests who
@@ -179,6 +180,38 @@ each with its own copy button, plus a **Copy All** button that copies
 `Name: link` for every guest as one block of text (handy for pasting into
 a spreadsheet, or working through one by one on WhatsApp). Nothing here
 is saved anywhere; it's regenerated from the pasted list each time.
+
+## Weather
+
+`src/services/weatherService.ts` (free, no key, [Open-Meteo](https://open-meteo.com))
+does two different things:
+
+- **Live conditions right now** at DUA's coordinates — shown as "Weather
+  at DUA: 24°C, Light rain" whenever a guest is browsing the invitation.
+- **The actual event-day forecast** (`getEventDayForecast`), shown as a
+  "☔ Rain is expected — consider carrying an umbrella" tip. Forecast
+  APIs only cover roughly the next 16 days, so for most of this event's
+  lifetime (DUA is over a year out) this simply has nothing to show yet
+  — the tip only appears once the event date comes within that window,
+  automatically, with no action needed.
+
+## Day-of programme
+
+Setting `scheduleItems` in `src/config/event.ts` (a list of
+`{ time, titleEn, titleMl }`) shows a simple timeline — e.g. "11:00 AM —
+Guests welcomed at the gate" — on the Event Mode screen once a guest has
+actually arrived, so they know what's happening next. Ships with a
+sensible default programme; set it to `[]` to skip the timeline entirely.
+
+## Remind me on the day
+
+The Veranda chapter has an optional **🔔 Remind Me** button that requests
+notification permission and, from then on, shows a local "Today's the
+day!" notification if the guest has the app open (or reopens it) on the
+event date. This is a same-day nudge, not a guaranteed advance alarm — a
+browser tab can't reliably wake itself up unprompted days ahead with no
+backend/push server, and this app deliberately has neither. Hidden
+entirely on browsers without Notification API support.
 
 ## Language
 
@@ -241,6 +274,7 @@ everything else still works without it.
        data.rsvpStatus ?? '',
        data.guests ?? '',
        data.dietaryNotes ?? '',
+       data.guestNames ?? '',
        data.message ?? '',
        data.hasVoiceMessage ? 'yes' : '',
        data.guestId,
@@ -260,7 +294,7 @@ everything else still works without it.
      // double-counted) and sums up the party sizes.
      const latestByGuest = {};
      rows.forEach((row) => {
-       const [timestamp, type, , rsvpStatus, guests, , , , guestId] = row;
+       const [timestamp, type, , rsvpStatus, guests, , , , , guestId] = row;
        if (type !== 'rsvp' || !guestId) return;
        const existing = latestByGuest[guestId];
        if (!existing || new Date(timestamp) >= new Date(existing.timestamp)) {
@@ -291,7 +325,8 @@ everything else still works without it.
    paste it into `/admin` → Event Settings → **Host Notifications Webhook
    URL** to try it first without redeploying.
 
-From then on, every RSVP (including headcount and dietary-note changes),
+From then on, every RSVP (including headcount, guest-name, and
+dietary-note changes),
 every arrival, and every guestbook message appends a row to that Sheet —
 open it on your phone or laptop any time to see responses live, with no
 dashboard, login, or app to build. Leaving the field blank (the default)
@@ -415,16 +450,16 @@ src/
     routingService.ts     # OSRM + straight-line fallback
     mapService.ts          # MapLibre init, markers, route drawing
     journeyService.ts      # pure distance/arrival/departure state logic
+    weatherService.ts      # live conditions + event-day forecast (Open-Meteo)
     storageService.ts      # typed localStorage/sessionStorage access
     adminConfigService.ts  # local /admin Event Settings overrides
     notifyHostService.ts   # optional fire-and-forget webhook to a Google Sheet
     guestCountService.ts   # optional read-back of the live guest count + announcement
   utils/
     pwaInstall.ts           # beforeinstallprompt/iOS/standalone detection
-  hooks/                  # useLanguage, useEventConfig, useJourney, useGuestCount
-  components/
-    AnnouncementBanner.tsx  # optional live "host update" banner
-    InstallAppBanner.tsx    # one-time "add to home screen" nudge
+    notifications.ts        # local "remind me on the day" notification helper
+  hooks/                  # useLanguage, useEventConfig, useJourney, useGuestCount,
+                           # useEventDayForecast, useEventDayReminder
   features/
     invitation/           # opening, welcome, RSVP, event details, contact
     journey/               # intro, permission, arrival reveal, event mode, thank you
@@ -432,7 +467,8 @@ src/
     guestbook/
     faq/                    # Ask DUA floating widget
     admin/                  # /admin dashboard, demo controls, settings form
-  components/             # Button, Card, BottomSheet, LanguageSwitcher, HomeIllustration
+  components/             # Button, Card, BottomSheet, LanguageSwitcher, HomeIllustration,
+                           # AnnouncementBanner, InstallAppBanner
   sw.ts                   # custom service worker (injectManifest)
 ```
 

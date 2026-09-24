@@ -8,6 +8,7 @@ export interface HostNotification {
   rsvpStatus?: RsvpStatus;
   guests?: number;
   dietaryNotes?: string;
+  guestNames?: string;
   message?: string;
   hasVoiceMessage?: boolean;
   timestamp: string; // ISO 8601

@@ -30,6 +30,9 @@ const KEYS = {
   dietaryNotes: 'dua:dietaryNotes',
   dismissedAnnouncement: 'dua:dismissedAnnouncement',
   installPromptDismissed: 'dua:installPromptDismissed',
+  wantsEventDayReminder: 'dua:wantsEventDayReminder',
+  eventDayReminderShownOn: 'dua:eventDayReminderShownOn',
+  guestNames: 'dua:guestNames',
 } as const;
 
 function readRaw(key: string): string | null {
@@ -211,6 +214,30 @@ export const storageService = {
     writeRaw(KEYS.installPromptDismissed, '1');
   },
 
+  wantsEventDayReminder(): boolean {
+    return readRaw(KEYS.wantsEventDayReminder) === '1';
+  },
+  setWantsEventDayReminder(wants: boolean): void {
+    if (wants) writeRaw(KEYS.wantsEventDayReminder, '1');
+    else removeRaw(KEYS.wantsEventDayReminder);
+  },
+
+  /** YYYY-MM-DD of the last date the on-device event-day reminder fired,
+   * so it shows at most once per day even across reopens. */
+  getEventDayReminderShownOn(): string | null {
+    return readRaw(KEYS.eventDayReminderShownOn);
+  },
+  setEventDayReminderShownOn(dateIso: string): void {
+    writeRaw(KEYS.eventDayReminderShownOn, dateIso);
+  },
+
+  getGuestNames(): string {
+    return readRaw(KEYS.guestNames) ?? '';
+  },
+  setGuestNames(names: string): void {
+    writeRaw(KEYS.guestNames, names);
+  },
+
   /**
    * Wipes every guest-facing key (RSVP, journey progress, guestbook entry,
    * guest id — a brand new one is generated next) so the invitation opens
@@ -226,6 +253,7 @@ export const storageService = {
     removeRaw(KEYS.invitationOpenedAt);
     removeRaw(KEYS.hasSeenOpening);
     removeRaw(KEYS.dietaryNotes);
+    removeRaw(KEYS.guestNames);
     // Deliberately keeps guestNote — it came from the link itself (?note=),
     // so a fresh replay should still greet the guest with the same note.
     this.resetJourney();

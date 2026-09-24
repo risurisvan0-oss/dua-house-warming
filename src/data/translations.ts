@@ -99,6 +99,15 @@ export const translations = {
   },
   installNow: { en: 'Install', ml: 'ഇൻസ്റ്റാൾ ചെയ്യുക' },
   maybeLater: { en: 'Maybe Later', ml: 'പിന്നീട്' },
+  rainExpectedTip: {
+    en: '☔ Rain is expected — consider carrying an umbrella.',
+    ml: '☔ മഴ പ്രതീക്ഷിക്കുന്നു — ഒരു കുട കൊണ്ടുവരാൻ ശ്രദ്ധിക്കുക.',
+  },
+  todaysProgramme: { en: "Today's Programme", ml: 'ഇന്നത്തെ പരിപാടി' },
+  remindMeOnTheDay: { en: '🔔 Remind Me', ml: '🔔 ഓർമ്മിപ്പിക്കുക' },
+  reminderOnCopy: { en: "🔔 We'll remind you on the day", ml: '🔔 ഞങ്ങൾ ആ ദിവസം ഓർമ്മിപ്പിക്കാം' },
+  guestNamesOptional: { en: 'Names of those joining you (optional)', ml: 'കൂടെ വരുന്നവരുടെ പേരുകൾ (ഓപ്ഷണൽ)' },
+  guestNamesPlaceholder: { en: 'e.g. Spouse, 2 kids', ml: 'ഉദാ. ഭാര്യ/ഭർത്താവ്, 2 കുട്ടികൾ' },
 
   // ---- Location permission ----
   journeyExperience: { en: 'Journey Experience', ml: 'യാത്രാ അനുഭവം' },
