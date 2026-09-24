@@ -4,6 +4,7 @@ import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { useLanguage } from '../../hooks/useLanguage';
 import { storageService } from '../../services/storageService';
+import { notifyHost } from '../../services/notifyHostService';
 import { blobToDataUrl } from '../../utils/blob';
 import { VoiceRecorderField } from './VoiceRecorderField';
 
@@ -30,6 +31,15 @@ export function GuestbookForm({ onDone }: { onDone: () => void }) {
         audioDataUrl,
       });
       setSubmitted(true);
+      // Voice notes stay device-only (too large for a webhook POST) — the
+      // host still gets a text notification flagging that one exists.
+      notifyHost({
+        type: 'guestbook',
+        guestId: storageService.getGuestId(),
+        guestName: name.trim(),
+        message: message.trim(),
+        hasVoiceMessage: !!audioDataUrl,
+      });
     } finally {
       setSubmitting(false);
     }

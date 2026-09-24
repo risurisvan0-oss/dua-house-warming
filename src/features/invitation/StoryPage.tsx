@@ -10,6 +10,8 @@ import { useWeather } from '../../hooks/useWeather';
 import { storageService, type RsvpStatus } from '../../services/storageService';
 import { playChime } from '../../utils/chime';
 import { calendarLink, eventStartDateTime, formatHijriEventDate, formatEventTimeRange, getEventPhase } from '../../utils/dateTime';
+import { directionsLink } from '../../utils/contact';
+import { notifyHost } from '../../services/notifyHostService';
 
 const TZ = 'Asia/Kolkata';
 const reveal = {
@@ -50,11 +52,28 @@ export function StoryPage({
       playChime();
       navigator.vibrate?.(30);
     }
+    notifyHost({
+      type: 'rsvp',
+      guestId: storageService.getGuestId(),
+      guestName: guestName ?? 'Guest',
+      rsvpStatus: status,
+      guests: status === 'yes' ? guests : undefined,
+    });
   };
   const changeGuests = (next: number) => {
     const clamped = Math.max(1, Math.min(8, next));
     storageService.setGuests(clamped);
     setGuests(clamped);
+    // Keep the host's headcount current if they've already RSVP'd yes.
+    if (rsvp === 'yes') {
+      notifyHost({
+        type: 'rsvp',
+        guestId: storageService.getGuestId(),
+        guestName: guestName ?? 'Guest',
+        rsvpStatus: 'yes',
+        guests: clamped,
+      });
+    }
   };
 
   const rsvpOptions: { id: RsvpStatus; label: string }[] = [
@@ -252,6 +271,10 @@ export function StoryPage({
         <p className="mt-3 max-w-[18rem] text-xs leading-relaxed text-cream/65">{t('locationPrivacyCopy')}</p>
         <div className="flex-1" />
         <Button fullWidth onClick={onStartJourney} className="mt-8 !bg-cream !text-forest">{t('startMyJourneyEmoji')}</Button>
+        <a href={directionsLink()} target="_blank" rel="noreferrer" className="mt-3 w-full">
+          <Button fullWidth variant="outline" className="!border-cream/60 !text-cream">{t('getDirections')}</Button>
+        </a>
+        <p className="mt-2 max-w-[18rem] text-xs leading-relaxed text-cream/60">{t('getDirectionsHint')}</p>
         <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="mt-4 min-h-11 text-sm text-cream/75">{t('notNow')}</button>
       </motion.section>
     </div>

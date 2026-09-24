@@ -75,6 +75,11 @@ export const translations = {
   },
   startMyJourneyEmoji: { en: 'Start My Journey 🚗', ml: 'യാത്ര ആരംഭിക്കുക 🚗' },
   notNow: { en: 'Not Now', ml: 'ഇപ്പോൾ വേണ്ട' },
+  getDirections: { en: 'Get Directions 📍', ml: 'വഴി കാണിക്കുക 📍' },
+  getDirectionsHint: {
+    en: "Prefer your own maps app? We'll open Google Maps instead.",
+    ml: 'നിങ്ങളുടെ സ്വന്തം മാപ്സ് ആപ്പ് ഉപയോഗിക്കാൻ താൽപ്പര്യമുണ്ടോ? പകരം ഞങ്ങൾ Google Maps തുറക്കാം.',
+  },
 
   // ---- Location permission ----
   journeyExperience: { en: 'Journey Experience', ml: 'യാത്രാ അനുഭവം' },

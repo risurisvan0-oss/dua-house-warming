@@ -15,6 +15,21 @@ export function whatsappLink(message?: string): string {
   return `https://wa.me/${countryCoded}${text}`;
 }
 
+/**
+ * Opens Google Maps directions in the guest's own maps app (or a new tab).
+ * Uses real coordinates when configured (precise pin), otherwise falls back
+ * to a text search on the address — so this works even before DUA's exact
+ * location is set, and needs no location permission from the guest.
+ */
+export function directionsLink(): string {
+  const cfg = getEffectiveEventConfig();
+  const destination =
+    typeof cfg.latitude === 'number' && typeof cfg.longitude === 'number'
+      ? `${cfg.latitude},${cfg.longitude}`
+      : cfg.address;
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+}
+
 export function invitationShareText(link: string): string {
   const cfg = getEffectiveEventConfig();
   return [

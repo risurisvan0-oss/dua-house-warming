@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { useLanguage } from '../../hooks/useLanguage';
+import { directionsLink } from '../../utils/contact';
 
 export function LocationPermissionPage({
   onAllow,
@@ -30,6 +31,9 @@ export function LocationPermissionPage({
       {notConfigured ? (
         <Card className="max-w-sm mb-6">
           <p className="text-[15px] text-charcoal/80 mb-4">{t('errorLocationNotConfigured')}</p>
+          <a href={directionsLink()} target="_blank" rel="noreferrer" className="block mb-3">
+            <Button fullWidth variant="outline">{t('getDirections')}</Button>
+          </a>
           <Button fullWidth onClick={onSkip}>
             {t('continueLabel')}
           </Button>
@@ -37,6 +41,9 @@ export function LocationPermissionPage({
       ) : denied ? (
         <Card className="max-w-sm mb-6">
           <p className="text-[15px] text-charcoal/80 mb-4">{t('locationDeniedCopy')}</p>
+          <a href={directionsLink()} target="_blank" rel="noreferrer" className="block mb-3">
+            <Button fullWidth variant="outline">{t('getDirections')}</Button>
+          </a>
           <Button fullWidth onClick={onSkip}>
             {t('continueLabel')}
           </Button>

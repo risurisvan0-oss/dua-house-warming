@@ -174,9 +174,61 @@ Host" where relevant.
 
 `/` → after Thank You → **Leave a Message** saves a name + message to
 `localStorage` on that guest's own device (`src/services/storageService.ts`).
-There is no backend, so hosts cannot see these messages from a dashboard —
-the storage layer (`storageService.ts`) is deliberately isolated so a real
-backend could be plugged in later without touching any UI component.
+There is no backend, so hosts cannot see these messages from a dashboard by
+default — the storage layer (`storageService.ts`) is deliberately isolated
+so a real backend could be plugged in later without touching any UI
+component. See the next section for a free, optional way to see them live.
+
+## Seeing RSVPs as a host
+
+By default, RSVPs and guestbook messages are saved only on each guest's own
+phone (see above) — nobody else can see them. If you want to see them
+yourself as they come in, `src/services/notifyHostService.ts` can send a
+copy of every RSVP and guestbook message to a **free Google Sheet**, with
+no backend, no server, and no cost. It's entirely optional and off by
+default.
+
+### Setup (about 5 minutes, free Google account only)
+
+1. Create a new Google Sheet (any name).
+2. In it, go to **Extensions → Apps Script**, delete the placeholder code,
+   and paste this:
+
+   ```js
+   function doPost(e) {
+     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+     const data = JSON.parse(e.postData.contents);
+     sheet.appendRow([
+       new Date(data.timestamp),
+       data.type,
+       data.guestName,
+       data.rsvpStatus ?? '',
+       data.guests ?? '',
+       data.message ?? '',
+       data.hasVoiceMessage ? 'yes' : '',
+       data.guestId,
+     ]);
+     return ContentService.createTextOutput('OK');
+   }
+   ```
+
+3. Click **Deploy → New deployment → Web app**. Set "Execute as" to
+   **Me** and "Who has access" to **Anyone**. Deploy, and authorize it
+   with your Google account when prompted.
+4. Copy the Web app URL it gives you (ends in `/exec`).
+5. Paste it into `src/config/event.ts` as `hostNotifyWebhookUrl`, or
+   paste it into `/admin` → Event Settings → **Host Notifications Webhook
+   URL** to try it first without redeploying.
+
+From then on, every RSVP (including headcount changes) and every
+guestbook message appends a row to that Sheet — open it on your phone or
+laptop any time to see responses live, with no dashboard, login, or app
+to build. Leaving the field blank (the default) sends nothing anywhere.
+
+Because Apps Script Web Apps don't return browser-readable CORS headers,
+this uses a fire-and-forget `no-cors` POST — it never blocks or fails a
+guest's RSVP/guestbook submission even if the Sheet is unreachable, full,
+or the URL is wrong; the guest's own local copy is unaffected either way.
 
 ## Privacy & geolocation safety
 
@@ -260,10 +312,10 @@ src/
     journeyService.ts      # pure distance/arrival/departure state logic
     storageService.ts      # typed localStorage/sessionStorage access
     adminConfigService.ts  # local /admin Event Settings overrides
+    notifyHostService.ts   # optional fire-and-forget webhook to a Google Sheet
   hooks/                  # useLanguage, useEventConfig, useJourney
   features/
-    invitation/           # opening, welcome, event details, contact
-    rsvp/
+    invitation/           # opening, welcome, RSVP, event details, contact
     journey/               # intro, permission, arrival reveal, event mode, thank you
     map/                    # JourneyMap (MapLibre screen)
     guestbook/

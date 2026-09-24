@@ -164,6 +164,27 @@ export function EventSettingsForm() {
             </div>
           )}
         </div>
+        <div className="rounded-xl border border-dashed border-forest/25 bg-cream/60 p-3">
+          <Field label="Host Notifications Webhook URL (optional)">
+            <input
+              className={inputClass}
+              value={form.hostNotifyWebhookUrl ?? ''}
+              placeholder="https://script.google.com/macros/s/.../exec"
+              onChange={(e) => update('hostNotifyWebhookUrl', e.target.value.trim() === '' ? null : e.target.value.trim())}
+            />
+          </Field>
+          <p className="text-xs text-charcoal/50 mt-2">
+            When set, every RSVP and guestbook message also gets posted here — the one way to see responses
+            without a backend. See &ldquo;Seeing RSVPs as a host&rdquo; in the README for the free 5-minute Google
+            Sheet + Apps Script setup. Leave blank to skip.
+          </p>
+          {form.hostNotifyWebhookUrl && (
+            <p className="text-xs text-charcoal/50 mt-1.5">
+              Paste this into <code>src/config/event.ts</code> (<code>hostNotifyWebhookUrl</code>) for the real
+              deployed build — Save Settings below only stores it in this browser.
+            </p>
+          )}
+        </div>
         <div className="grid grid-cols-3 gap-3">
           <Field label="Arrival Radius (m)">
             <input

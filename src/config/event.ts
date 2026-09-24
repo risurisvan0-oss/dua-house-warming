@@ -30,6 +30,15 @@ export interface EventConfig {
   /** minutes outside the geofence before DEPARTED fires */
   departureDelayMinutes: number;
 
+  /**
+   * OPTIONAL. A free Google Apps Script Web App URL that receives a POST
+   * whenever a guest RSVPs or leaves a guestbook message, so hosts can see
+   * responses in a Google Sheet — see "Seeing RSVPs as a host" in the
+   * README for the 5-minute, no-cost setup. Leave null to skip this
+   * entirely; nothing breaks, guests just stay local-only as before.
+   */
+  hostNotifyWebhookUrl: string | null;
+
   welcomeMessageEn: string;
   welcomeMessageMl: string;
   arrivalMessageEn: string;
@@ -54,6 +63,8 @@ export const eventConfig: EventConfig = {
   nearbyRadius: 1000,
   arrivalRadius: 150,
   departureDelayMinutes: 7,
+
+  hostNotifyWebhookUrl: null,
 
   welcomeMessageEn:
     'With the blessings of Allah, we are beginning a beautiful new chapter in our new home. We would be delighted to have you with us as we celebrate this special day.',
