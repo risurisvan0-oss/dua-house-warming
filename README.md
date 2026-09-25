@@ -128,6 +128,16 @@ stop arriving, rather than silently failing.
 
 ## Demo Mode
 
+> **Note on routes:** this app uses hash-based routing (`HashRouter`),
+> not path-based routing — because it's typically deployed to a GitHub
+> Pages *project* subpath (e.g. `you.github.io/repo-name/`), and a plain
+> path-based router has no way to know about that subpath, which causes
+> a **blank page** (ask me if you ever see one — it's almost always
+> this). So `/admin` and `/wall` below really mean **`/#/admin`** and
+> **`/#/wall`** appended to wherever the app is hosted — e.g.
+> `https://you.github.io/repo-name/#/admin`. This works identically
+> regardless of subpath, domain, or host, with zero configuration.
+
 Because most people testing this won't physically drive to Kerala, `/admin`
 has a **Demo Journey** panel with buttons for every distance band (5 km, 3
 km, 1 km, 500 m, 200 m, 100 m), plus Arrived, Departed, and Thank You.
@@ -138,7 +148,7 @@ guest invitation — so the standard demo flow is:
 
 1. Open the invitation (`/`) in one tab, RSVP, and start the journey so
    you're on the live map screen.
-2. Open `/admin` in a second tab.
+2. Open `/#/admin` in a second tab.
 3. Click through **START → 5 KM → 3 KM → 1 KM → 500 M → 200 M → 100 M →
    ARRIVED → DEPARTED → THANK YOU** and watch the first tab transition
    through every state, including the arrival reveal animation.
@@ -452,10 +462,12 @@ per exact text, not as a one-time "seen it" flag.
 ## Event Display Mode (`/wall`)
 
 Requires the `hostNotifyWebhookUrl` setup above. A separate screen at
-`/wall` (`src/features/display/DisplayWallPage.tsx`), meant to be cast
-to a TV or projector **at the venue itself** rather than opened on a
-guest's own phone — turning the invitation from something everyone
-experiences alone into a shared moment in the room:
+`/#/wall` (`src/features/display/DisplayWallPage.tsx` — e.g.
+`https://you.github.io/repo-name/#/wall`, see the routing note under
+[Demo Mode](#demo-mode)), meant to be cast to a TV or projector **at the
+venue itself** rather than opened on a guest's own phone — turning the
+invitation from something everyone experiences alone into a shared
+moment in the room:
 
 - **Before the event**: a large ambient countdown to the start time.
 - **During/after**: the live confirmed-guest count, a celebratory toast
