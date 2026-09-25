@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter } from 'react-router-dom'
 import { registerSW } from 'virtual:pwa-register'
 import './index.css'
 import App from './App.tsx'
@@ -47,8 +47,15 @@ if (urlChanged) {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    {/* HashRouter, not BrowserRouter: this app is deployed to a project
+        subpath on GitHub Pages (username.github.io/repo-name/), which a
+        plain BrowserRouter has no way to know about — it matches routes
+        against the full pathname ("/repo-name/"), finds nothing, and
+        renders a blank page. HashRouter keeps the route entirely in the
+        URL fragment (#/admin, #/wall), which works identically no matter
+        what subpath, domain, or host this ends up deployed to. */}
+    <HashRouter>
       <App />
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>,
 )
