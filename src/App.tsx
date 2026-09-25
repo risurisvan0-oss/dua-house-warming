@@ -16,6 +16,7 @@ import { BottomSheet } from './components/BottomSheet';
 import { AnnouncementBanner } from './components/AnnouncementBanner';
 import { InstallAppBanner } from './components/InstallAppBanner';
 import { useGuestCount } from './hooks/useGuestCount';
+import { useDismissibleAnnouncement } from './hooks/useDismissibleAnnouncement';
 import { DoorsOpening } from './features/invitation/DoorsOpening';
 import { StoryPage } from './features/invitation/StoryPage';
 import { ContactButtons } from './features/invitation/ContactButtons';
@@ -72,6 +73,7 @@ function GuestApp() {
   const journey = useJourney();
   const eventConfig = useEventConfig();
   const guestCount = useGuestCount();
+  const announcement = useDismissibleAnnouncement(guestCount?.announcement);
   const { t, language } = useLanguage();
   const landmarkNote = (language === 'en' ? eventConfig.arrivalLandmarkNoteEn : eventConfig.arrivalLandmarkNoteMl) || undefined;
 
@@ -137,15 +139,30 @@ function GuestApp() {
     }
   };
 
-  const showTopBar = !['opening', 'map', 'arrival'].includes(screen);
-  const showInstallPrompt = !['opening', 'map', 'arrival'].includes(screen);
+  // 'opening', 'map', and 'arrival' are deliberately chrome-free (or have
+  // their own custom header, in the map's case) — the announcement
+  // banner, top bar, and install prompt all stay off those screens so
+  // nothing overlaps a cinematic moment or JourneyMap's own back/compass row.
+  const showChrome = !['opening', 'map', 'arrival'].includes(screen);
+  const showTopBar = showChrome;
+  const showInstallPrompt = showChrome;
 
   return (
     <div className="relative">
-      <AnnouncementBanner text={guestCount?.announcement} />
+      <AnnouncementBanner
+        text={guestCount?.announcement}
+        visible={showChrome && announcement.visible}
+        onDismiss={announcement.dismiss}
+      />
 
       {showTopBar && (
-        <div className="fixed top-[max(0.75rem,env(safe-area-inset-top))] inset-x-4 z-20 flex justify-between">
+        <div
+          className={`fixed inset-x-4 z-20 flex justify-between transition-[top] duration-300 ${
+            announcement.visible
+              ? 'top-[calc(4.25rem+max(0.75rem,env(safe-area-inset-top)))]'
+              : 'top-[max(0.75rem,env(safe-area-inset-top))]'
+          }`}
+        >
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
             <TextSizeToggle />
@@ -161,7 +178,7 @@ function GuestApp() {
       )}
 
       {shareToast && (
-        <div className="fixed top-16 inset-x-0 z-30 flex justify-center px-4">
+        <div className={`fixed inset-x-0 z-30 flex justify-center px-4 ${announcement.visible ? 'top-32' : 'top-16'}`}>
           <div className="rounded-full bg-forest text-ivory text-xs px-4 py-2 shadow-lg">{t('linkCopied')}</div>
         </div>
       )}

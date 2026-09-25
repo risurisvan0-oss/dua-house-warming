@@ -230,13 +230,23 @@ export function StoryPage({
             </p>
           </div>
         </motion.div>
-        {prayerTimes && (
-          <motion.div {...reveal} className="mt-3 rounded-2xl border border-emerald/25 bg-ivory p-4">
-            <p className="text-[10.5px] uppercase tracking-[0.2em] text-gold-deep mb-1.5">🕌 {t('prayerTimesAtDua')}</p>
-            <div className="flex gap-5 text-sm text-forest">
-              <span>{t('dhuhr')}: {prayerTimes.dhuhr}</span>
-              <span>{t('asr')}: {prayerTimes.asr}</span>
-            </div>
+        {(prayerTimes || weather) && (
+          <motion.div {...reveal} className="mt-3 rounded-2xl border border-emerald/25 bg-ivory p-4 text-left space-y-2">
+            {prayerTimes && (
+              <div>
+                <p className="text-[10.5px] uppercase tracking-[0.2em] text-gold-deep mb-1">🕌 {t('prayerTimesAtDua')}</p>
+                <div className="flex gap-5 text-sm text-forest">
+                  <span>{t('dhuhr')}: {prayerTimes.dhuhr}</span>
+                  <span>{t('asr')}: {prayerTimes.asr}</span>
+                </div>
+              </div>
+            )}
+            {weather && (
+              <p className={`text-[13px] text-forest ${prayerTimes ? 'pt-2 border-t border-emerald/15' : ''}`}>
+                {t('weatherAtDua')}: {weather.temperatureCelsius}°C, {weather.description}
+              </p>
+            )}
+            {eventDayForecast?.isRainy && <p className="text-[13px] text-gold-deep">{t('rainExpectedTip')}</p>}
           </motion.div>
         )}
         {eventConfig.travelInfo && (
@@ -245,16 +255,6 @@ export function StoryPage({
             <p className="text-sm text-forest">✈️ {t('nearestAirportLabel')}: {eventConfig.travelInfo.nearestAirport}</p>
             <p className="mt-1 text-sm text-forest">🚉 {t('nearestStationLabel')}: {eventConfig.travelInfo.nearestRailwayStation}</p>
           </motion.div>
-        )}
-        {weather && (
-          <motion.p {...reveal} className="mt-3 rounded-2xl border border-emerald/25 bg-ivory px-4 py-3 text-[13px] text-forest">
-            {t('weatherAtDua')}: {weather.temperatureCelsius}°C, {weather.description}
-          </motion.p>
-        )}
-        {eventDayForecast?.isRainy && (
-          <motion.p {...reveal} className="mt-2 rounded-2xl border border-gold-deep/25 bg-gold/10 px-4 py-3 text-[13px] text-gold-deep">
-            {t('rainExpectedTip')}
-          </motion.p>
         )}
 
         <motion.div {...reveal} className="mt-6"><CountdownTimer /></motion.div>
