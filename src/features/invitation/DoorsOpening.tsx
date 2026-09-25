@@ -124,7 +124,7 @@ export function DoorsOpening({ onEnter }: { onEnter: () => void }) {
 
         <motion.div style={{ opacity: doorUiOpacity }} className="pointer-events-none absolute inset-0 flex flex-col items-center">
           <p className="mt-[max(1.5rem,env(safe-area-inset-top))] font-display text-3xl text-[#e8c77a]">بسم الله</p>
-          <p className="mt-0.5 px-6 text-center text-[10.5px] uppercase tracking-[0.26em] text-[#e8c77a]">
+          <p className="mt-1.5 px-6 text-center text-sm font-semibold uppercase tracking-[0.2em] text-[#f3d98f]">
             {eventConfig.hostNames}
           </p>
           <div className="flex-1" />
