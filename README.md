@@ -1,5 +1,10 @@
 # DUA — House Warming Invitation
 
+**Live:** https://risurisvan0-oss.github.io/dua-house-warming/ — auto-deploys
+on every push to `master` via `.github/workflows/deploy.yml`. Real
+coordinates are still not set (see below), so the Journey/map screens
+aren't functional on the live site yet.
+
 An interactive, zero-budget digital invitation and "Journey Experience" for
 Majeed & Kamarunnisa's house-warming ceremony at **DUA**, 18 October 2026,
 Thonichra, Naduvattom, Kerala.
@@ -525,21 +530,21 @@ Two ways:
 
 Both options below need **no credit card and no paid plan**.
 
-### GitHub Pages
+### GitHub Pages — already set up
 
-```bash
-npm run build
-```
+This repo is already deployed this way (see the **Live** link at the top).
+`.github/workflows/deploy.yml` builds with `npm run build` and publishes
+`dist/` via the standard `actions/deploy-pages` flow on every push to
+`master`, plus manual runs via **Actions → Deploy to GitHub Pages → Run
+workflow**. Pages is enabled with **Source: GitHub Actions** in the repo's
+**Settings → Pages**. `vite.config.ts` sets `base: './'` (relative paths),
+so the build works unmodified from a project subpath
+(`username.github.io/repo-name/`) or a user/org root site.
 
-1. Push this repo to GitHub.
-2. In the repo, go to **Settings → Pages**, set **Source** to
-   "GitHub Actions", and add a workflow that runs `npm run build` and
-   publishes `dist/` (the standard `actions/deploy-pages` flow) — or, more
-   simply, commit the contents of `dist/` to a `gh-pages` branch and enable
-   Pages on that branch.
-3. `vite.config.ts` already sets `base: './'` (relative paths), so the
-   build works unmodified whether it's served from a project subpath
-   (`username.github.io/repo-name/`) or a user/org root site.
+To set this up on a fork or a different repo from scratch: push the repo
+to GitHub, then either copy this same workflow file, or go to
+**Settings → Pages**, set **Source** to "GitHub Actions", and let GitHub
+suggest a starter workflow.
 
 ### Cloudflare Pages
 
