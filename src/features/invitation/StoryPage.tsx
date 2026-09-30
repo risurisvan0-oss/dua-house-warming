@@ -14,7 +14,6 @@ import { usePrayerTimes } from '../../hooks/usePrayerTimes';
 import { storageService, type RsvpStatus } from '../../services/storageService';
 import { playChime } from '../../utils/chime';
 import { calendarLink, eventStartDateTime, formatHijriEventDate, formatEventTimeRange, formatRsvpByDate, getEventPhase } from '../../utils/dateTime';
-import { directionsLink } from '../../utils/contact';
 import { notifyHost } from '../../services/notifyHostService';
 
 const TZ = 'Asia/Kolkata';
@@ -412,10 +411,6 @@ export function StoryPage({
             <p className="mt-2 max-w-[18rem] text-xs leading-relaxed text-cream/65">{t('locationPrivacyCopy')}</p>
             <div className="flex-1 min-h-4" />
             <Button fullWidth onClick={onStartJourney} className="mt-6 !bg-cream !text-forest">{t('startMyJourneyEmoji')}</Button>
-            <a href={directionsLink()} target="_blank" rel="noreferrer" className="mt-3 w-full">
-              <Button fullWidth variant="outline" className="!border-cream/60 !text-cream">{t('getDirections')}</Button>
-            </a>
-            <p className="mt-2 max-w-[18rem] text-xs leading-relaxed text-cream/60">{t('getDirectionsHint')}</p>
           </motion.section>
         )}
       </AnimatePresence>

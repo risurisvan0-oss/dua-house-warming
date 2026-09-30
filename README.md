@@ -307,11 +307,14 @@ entirely on browsers without Notification API support.
 
 ## Language
 
-English and Malayalam are both fully supported. Every string lives in
-`src/data/translations.ts` as `{ en, ml }` pairs, looked up through the
-`useLanguage()` hook / `t()` function. The language switcher persists the
-choice to `localStorage`. To change or add copy, edit that one file — no
-string is hardcoded in a component.
+The guest-facing app is English-only — there's no language switcher in
+the UI, and everyone always sees English regardless of any locally
+stored preference. Every string still lives in `src/data/translations.ts`
+as `{ en, ml }` pairs looked up through `useLanguage()` / `t()`, and the
+Malayalam values are still there (unused) rather than deleted, since
+re-enabling bilingual support later just means adding the switcher back
+— no content work needed. To change or add English copy, edit that one
+file's `en` values — no string is hardcoded in a component.
 
 ## Ask DUA (FAQ assistant)
 
@@ -600,9 +603,8 @@ src/
     faq/                    # Ask DUA floating widget
     admin/                  # /admin dashboard, demo controls, settings form
     display/                # /wall — Event Display Mode, for a TV at the venue
-  components/             # Button, Card, BottomSheet, BottomTabBar, LanguageSwitcher,
-                           # HomeIllustration, AnnouncementBanner, InstallAppBanner,
-                           # TextSizeToggle, CompassArrow
+  components/             # Button, Card, BottomSheet, BottomTabBar, HomeIllustration,
+                           # AnnouncementBanner, InstallAppBanner, TextSizeToggle, CompassArrow
   sw.ts                   # custom service worker (injectManifest)
 ```
 

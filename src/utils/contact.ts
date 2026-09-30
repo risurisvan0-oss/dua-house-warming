@@ -16,21 +16,6 @@ export function whatsappLink(message?: string): string {
 }
 
 /**
- * Opens Google Maps directions in the guest's own maps app (or a new tab).
- * Uses real coordinates when configured (precise pin), otherwise falls back
- * to a text search on the address — so this works even before DUA's exact
- * location is set, and needs no location permission from the guest.
- */
-export function directionsLink(): string {
-  const cfg = getEffectiveEventConfig();
-  const destination =
-    typeof cfg.latitude === 'number' && typeof cfg.longitude === 'number'
-      ? `${cfg.latitude},${cfg.longitude}`
-      : cfg.address;
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
-}
-
-/**
  * A downloadable vCard for the host, so their number goes straight into
  * the guest's phone contacts rather than just being tap-to-call. Built
  * as a `data:` URI (no Blob/object-URL cleanup needed) — small enough

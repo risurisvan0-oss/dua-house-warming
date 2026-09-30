@@ -10,7 +10,6 @@ import { hasCoordinates } from './config/event';
 import { shareInvitation } from './utils/contact';
 import { updateAppBadge } from './utils/appBadge';
 import { eventStartDateTime } from './utils/dateTime';
-import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { TextSizeToggle } from './components/TextSizeToggle';
 import { BottomSheet } from './components/BottomSheet';
 import { AnnouncementBanner } from './components/AnnouncementBanner';
@@ -167,7 +166,6 @@ function GuestApp() {
           }`}
         >
           <div className="flex items-center gap-2">
-            <LanguageSwitcher />
             <TextSizeToggle />
           </div>
           <button
