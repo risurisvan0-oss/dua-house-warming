@@ -86,7 +86,6 @@ export const translations = {
     en: 'e.g. vegetarian, no shellfish',
     ml: 'ഉദാ. വെജിറ്റേറിയൻ, കക്കയിറച്ചി ഒഴിവാക്കുക',
   },
-  guestsConfirmedSoFar: { en: 'guests confirmed so far', ml: 'അതിഥികൾ ഇതുവരെ സ്ഥിരീകരിച്ചു' },
   gotIt: { en: 'Got it', ml: 'മനസ്സിലായി' },
   installAppTitle: { en: 'Add DUA to your home screen', ml: 'DUA നിങ്ങളുടെ ഹോം സ്ക്രീനിൽ ചേർക്കുക' },
   installAppBodyAndroid: {

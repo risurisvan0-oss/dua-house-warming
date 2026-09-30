@@ -10,7 +10,6 @@ import { useWeather } from '../../hooks/useWeather';
 import { useEventDayForecast } from '../../hooks/useEventDayForecast';
 import { useEventDayReminder } from '../../hooks/useEventDayReminder';
 import { usePrayerTimes } from '../../hooks/usePrayerTimes';
-import { useGuestCount } from '../../hooks/useGuestCount';
 import { storageService, type RsvpStatus } from '../../services/storageService';
 import { playChime } from '../../utils/chime';
 import { calendarLink, eventStartDateTime, formatHijriEventDate, formatEventTimeRange, formatRsvpByDate, getEventPhase } from '../../utils/dateTime';
@@ -36,7 +35,6 @@ export function StoryPage({
   const eventConfig = useEventConfig();
   const weather = useWeather(eventConfig);
   const eventDayForecast = useEventDayForecast(eventConfig);
-  const guestCount = useGuestCount();
   const reminder = useEventDayReminder(eventConfig, language);
   const prayerTimes = usePrayerTimes(eventConfig);
   const [guestNames, setGuestNames] = useState(storageService.getGuestNames());
@@ -290,11 +288,6 @@ export function StoryPage({
         {!rsvp && rsvpByDate && (
           <motion.p {...reveal} className="mt-2 text-center text-sm text-[#e8c77a]">
             {t('kindlyRsvpBy')} {rsvpByDate}
-          </motion.p>
-        )}
-        {guestCount && guestCount.confirmedGuests > 0 && (
-          <motion.p {...reveal} className="mt-2 text-center text-xs text-cream/70">
-            🎉 {guestCount.confirmedGuests} {t('guestsConfirmedSoFar')}
           </motion.p>
         )}
 

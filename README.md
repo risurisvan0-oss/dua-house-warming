@@ -322,11 +322,9 @@ copy of every RSVP, guestbook message, **and arrival** (the moment a
 guest's Journey confirms they've reached DUA — not fired by `/admin` demo
 testing) to a **free Google Sheet**, with no backend, no server, and no
 cost. It's entirely optional and off by default. This same setup also
-powers three more optional, purely additive features that read the
-Sheet back:
+powers two more optional, purely additive features that read the
+Sheet back (`src/services/guestCountService.ts`):
 
-- the "🎉 N guests confirmed so far" counter on the invitation
-  (`src/services/guestCountService.ts`)
 - the [live announcement banner](#live-announcement-banner) below
 - [Event Display Mode](#event-display-mode-wall) — the `/wall` screen
 
@@ -359,9 +357,8 @@ everything else still works without it.
      return ContentService.createTextOutput('OK');
    }
 
-   // Powers the "N guests confirmed" counter, the live announcement
-   // banner, and Event Display Mode's arrival celebrations + blessings
-   // wall — all on the invitation/wall pages, none of it needs a
+   // Powers the live announcement banner and Event Display Mode's
+   // arrival celebrations + blessings wall — none of it needs a
    // redeploy to change.
    function doGet() {
      const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -369,22 +366,6 @@ everything else still works without it.
      const rows = sheet.getDataRange().getValues();
      // Columns: timestamp, type, guestName, rsvpStatus, guests,
      // dietaryNotes, guestNames, message, hasVoiceMessage, guestId, isPublic
-
-     // Keeps only each guest's MOST RECENT "yes" RSVP (so someone who
-     // later changes their headcount, or switches to "no", isn't
-     // double-counted) and sums up the party sizes.
-     const latestByGuest = {};
-     rows.forEach((row) => {
-       const [timestamp, type, , rsvpStatus, guests, , , , , guestId] = row;
-       if (type !== 'rsvp' || !guestId) return;
-       const existing = latestByGuest[guestId];
-       if (!existing || new Date(timestamp) >= new Date(existing.timestamp)) {
-         latestByGuest[guestId] = { timestamp, rsvpStatus, guests };
-       }
-     });
-     const confirmedGuests = Object.values(latestByGuest)
-       .filter((g) => g.rsvpStatus === 'yes')
-       .reduce((sum, g) => sum + (Number(g.guests) || 0), 0);
 
      // Most recent arrivals first, for Event Display Mode's celebration
      // toasts — capped so the response stays small.
@@ -409,7 +390,7 @@ everything else still works without it.
      const announcement = announcementSheet ? String(announcementSheet.getRange('A1').getValue() || '') : '';
 
      return ContentService
-       .createTextOutput(JSON.stringify({ confirmedGuests, announcement, recentArrivals, wallMessages }))
+       .createTextOutput(JSON.stringify({ announcement, recentArrivals, wallMessages }))
        .setMimeType(ContentService.MimeType.JSON);
    }
    ```
@@ -470,18 +451,17 @@ invitation from something everyone experiences alone into a shared
 moment in the room:
 
 - **Before the event**: a large ambient countdown to the start time.
-- **During/after**: the live confirmed-guest count, a celebratory toast
-  each time a new arrival comes in ("🎉 Ahmed has arrived!") pulled from
-  the same Sheet used for [Seeing RSVPs as a host](#seeing-rsvps-as-a-host),
-  and a slow auto-scrolling wall of guestbook blessings.
+- **During/after**: a celebratory toast each time a new arrival comes in
+  ("🎉 Ahmed has arrived!") pulled from the same Sheet used for
+  [Seeing RSVPs as a host](#seeing-rsvps-as-a-host), and a slow
+  auto-scrolling wall of guestbook blessings.
 
 Guestbook messages only appear on the wall if the guest explicitly
 ticked **"Show my message on the screen at the venue"** when writing
 it — nothing is shown publicly without that consent. Everything on this
 page degrades gracefully to just the header and countdown if the webhook
 isn't configured; it never shows an error. Polls the Sheet every 15
-seconds while the page stays open (e.g. left running on a TV all day),
-independent of the single-fetch guest count shown elsewhere.
+seconds while the page stays open (e.g. left running on a TV all day).
 
 ## AR compass to DUA
 
@@ -588,7 +568,7 @@ src/
     storageService.ts      # typed localStorage/sessionStorage access
     adminConfigService.ts  # local /admin Event Settings overrides
     notifyHostService.ts   # optional fire-and-forget webhook to a Google Sheet
-    guestCountService.ts   # optional read-back of live guest count/announcement/wall data
+    guestCountService.ts   # optional read-back of live announcement/arrivals/wall data
   utils/
     pwaInstall.ts           # beforeinstallprompt/iOS/standalone detection
     notifications.ts        # local "remind me on the day" notification helper

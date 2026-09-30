@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { HomeIllustration } from '../../components/HomeIllustration';
 import { LatticeBorder } from '../../components/LatticeBorder';
 import { useEventConfig } from '../../hooks/useEventConfig';
-import { useLanguage } from '../../hooks/useLanguage';
 import { useGuestCount } from '../../hooks/useGuestCount';
 import { useCountdown } from '../../hooks/useCountdown';
 import { eventStartDateTime, formatEventDate, formatEventTimeRange, getEventPhase } from '../../utils/dateTime';
@@ -32,7 +31,6 @@ function CountdownBlock({ value, label }: { value: number; label: string }) {
  */
 export function DisplayWallPage() {
   const eventConfig = useEventConfig();
-  const { t } = useLanguage();
   const countdown = useCountdown(eventStartDateTime());
   const guestCount = useGuestCount(POLL_MS);
   const phase = getEventPhase();
@@ -85,13 +83,6 @@ export function DisplayWallPage() {
           <CountdownBlock value={countdown.hours} label="hrs" />
           <CountdownBlock value={countdown.minutes} label="min" />
           <CountdownBlock value={countdown.seconds} label="sec" />
-        </motion.div>
-      )}
-
-      {phase !== 'before' && guestCount && guestCount.confirmedGuests > 0 && (
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="mt-10 text-center">
-          <div className="font-heading text-7xl text-gold">{guestCount.confirmedGuests}</div>
-          <div className="mt-1 text-sm uppercase tracking-[0.25em] text-cream/70">{t('guestsConfirmedSoFar')}</div>
         </motion.div>
       )}
 
