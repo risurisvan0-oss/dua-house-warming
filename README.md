@@ -169,10 +169,37 @@ messages. These edits are saved to `localStorage` in *your* browser only —
 they're for demoing/tuning the copy quickly. For the real deployed build
 that every guest sees, edit `src/config/event.ts` directly and redeploy.
 
+## The House Scene (interactive navigation)
+
+The invitation deliberately isn't a scroll-through-chapters page. After
+the doors open, the guest lands on `src/features/invitation/HouseScene.tsx`
+— a single illustrated home (the existing `HomeIllustration.tsx` courtyard
+scene) with five tappable hotspots layered over it:
+
+- 🏮 the roof lantern → **The Day** (date, time, countdown, weather,
+  prayer times, Save the Date, event-day reminder)
+- 🪟 either window → **Welcome** (Bismillah, the welcome message, "Meet
+  the Hosts")
+- 🚪 the door → **RSVP**
+- 🌴 the path → **Getting There** (address, travel info, directions,
+  Start Journey, contact the hosts)
+
+Tapping a hotspot opens a full-screen conversation
+(`src/components/chat/ChatModal.tsx`) styled like a WhatsApp thread with
+the hosts — messages "type" themselves out one at a time
+(`src/hooks/useTypedReveal.ts`), and wherever a guest needs to respond
+(RSVP choice, headcount, names, dietary notes) it's a tappable quick-reply
+chip or an inline chat-style text field
+(`src/components/chat/ChatBubbles.tsx`), not a form. The RSVP modal
+(`src/features/invitation/modals/RsvpChat.tsx`) is the one with real
+branching — it replays a returning guest's existing answer as chat
+history rather than asking again, with a "Change your answer" option.
+An unvisited hotspot pulses gently; the RSVP one shows a ✓ once answered.
+
 ## RSVP & personalisation
 
-The invitation's "Majlis" chapter (`src/features/invitation/StoryPage.tsx`)
-collects a Yes/Maybe/No RSVP, a headcount (1–8, editable any time), an
+The RSVP conversation (`src/features/invitation/modals/RsvpChat.tsx`,
+opened from the house's door 🚪) collects a Yes/Maybe/No RSVP, a headcount (1–8, editable any time), an
 optional list of who's coming with them (free text, shown once headcount
 is above 1), and an optional dietary-preferences note — all saved locally
 per guest (`storageService.ts`) and, if configured, forwarded to the
@@ -224,8 +251,8 @@ Sciences, Karachi), the common convention across South Asia; change the
 ## Meet the Hosts
 
 Setting `hostsBioEn`/`hostsBioMl` in `src/config/event.ts` (or `/admin` →
-Event Settings) shows a short bio card in the invitation's opening
-chapter — useful for guests who are distant relatives or friends-of-
+Event Settings) shows a short bio message in the **Welcome** chat (🪟
+hotspot) — useful for guests who are distant relatives or friends-of-
 friends and may not know Majeed & Kamarunnisa well. `hostsPhotoUrl` adds
 a circular photo alongside it (a path into `public/`, e.g. `/hosts.jpg`,
 or any external image URL). Leave the bio fields null (the default) to
@@ -280,7 +307,7 @@ sensible default programme; set it to `[]` to skip the timeline entirely.
 
 ## Remind me on the day
 
-The Veranda chapter has an optional **🔔 Remind Me** button that requests
+The **The Day** chat (🏮 hotspot) has an optional **🔔 Remind Me** button that requests
 notification permission and, from then on, shows a local "Today's the
 day!" notification if the guest has the app open (or reopens it) on the
 event date. This is a same-day nudge, not a guaranteed advance alarm — a
@@ -574,9 +601,12 @@ src/
     notifications.ts        # local "remind me on the day" notification helper
   hooks/                  # useLanguage, useEventConfig, useJourney, useGuestCount,
                            # useEventDayForecast, useEventDayReminder, usePrayerTimes,
-                           # useTextScale, useDeviceHeading
+                           # useTextScale, useDeviceHeading, useTypedReveal
   features/
-    invitation/           # opening, welcome, RSVP, event details, contact
+    invitation/
+      HouseScene.tsx        # the tappable-house navigation shell (replaces chapter-scroll)
+      modals/                # WelcomeChat, RsvpChat, TheDayChat, GettingThereChat
+      DoorsOpening.tsx, ContactButtons.tsx
     journey/               # intro, permission, arrival reveal, event mode, thank you
     map/                    # JourneyMap (MapLibre screen)
     guestbook/
@@ -585,6 +615,7 @@ src/
     display/                # /wall — Event Display Mode, for a TV at the venue
   components/             # Button, Card, BottomSheet, LanguageSwitcher, HomeIllustration,
                            # AnnouncementBanner, InstallAppBanner, TextSizeToggle, CompassArrow
+    chat/                   # ChatModal, ChatBubbles — the WhatsApp-style conversation UI
   sw.ts                   # custom service worker (injectManifest)
 ```
 
