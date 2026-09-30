@@ -60,7 +60,7 @@ export const translations = {
   // ---- Bottom tab bar ----
   tabHome: { en: 'Home', ml: 'ഹോം' },
   tabDetails: { en: 'Details', ml: 'വിവരങ്ങൾ' },
-  tabRsvp: { en: 'RSVP', ml: 'RSVP' },
+  tabRsvp: { en: 'Attending', ml: 'പങ്കെടുക്കൽ' },
   tabJourney: { en: 'Journey', ml: 'യാത്ര' },
   dietaryPreferencesOptional: { en: 'Dietary preferences (optional)', ml: 'ഭക്ഷണ ക്രമീകരണങ്ങൾ (ഓപ്ഷണൽ)' },
   dietaryPreferencesPlaceholder: {
@@ -82,7 +82,7 @@ export const translations = {
     en: "Prefer your own maps app? We'll open Google Maps instead.",
     ml: 'നിങ്ങളുടെ സ്വന്തം മാപ്സ് ആപ്പ് ഉപയോഗിക്കാൻ താൽപ്പര്യമുണ്ടോ? പകരം ഞങ്ങൾ Google Maps തുറക്കാം.',
   },
-  kindlyRsvpBy: { en: 'Kindly RSVP by', ml: 'ദയവായി ഈ തീയതിക്ക് മുൻപ് അറിയിക്കുക:' },
+  kindlyRsvpBy: { en: 'Kindly let us know by', ml: 'ദയവായി ഈ തീയതിക്ക് മുൻപ് അറിയിക്കുക:' },
   gotIt: { en: 'Got it', ml: 'മനസ്സിലായി' },
   installAppTitle: { en: 'Add DUA to your home screen', ml: 'DUA നിങ്ങളുടെ ഹോം സ്ക്രീനിൽ ചേർക്കുക' },
   installAppBodyAndroid: {
