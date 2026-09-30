@@ -172,17 +172,23 @@ that every guest sees, edit `src/config/event.ts` directly and redeploy.
 ## The invitation experience
 
 After the doors open, the guest lands on
-`src/features/invitation/StoryPage.tsx` — a single continuous scrolling
-page (no chapter labels, no page-dot navigation, no gimmicks) that moves
-through four unlabeled, distinctly themed sections as the guest scrolls,
-each revealing its content with a gentle fade/slide-up as it enters the
-viewport: the courtyard (welcome, Bismillah, Meet the Hosts), the veranda
-(date, time, weather, prayer times, countdown), the majlis (RSVP), and
-the gate (ready to travel, directions, Start Journey).
+`src/features/invitation/StoryPage.tsx` — a real mobile-app shell, not a
+scrolling webpage: a fixed bottom tab bar (`src/components/BottomTabBar.tsx`)
+with four screens — **Home** (welcome, Bismillah, Meet the Hosts),
+**Details** (date, time, weather, prayer times, countdown), **RSVP**, and
+**Journey** (ready to travel, directions, Start Journey). Tapping a tab
+swaps the screen instantly with a native-feeling slide transition
+(Framer Motion, direction-aware — forward tabs slide in from the right,
+backward from the left) instead of scrolling through one long page. The
+RSVP tab gets a small ✓ badge on its icon once answered. Each screen is
+independently scrollable within its own fixed-height frame
+(`h-dvh overflow-y-auto`) so the top bar and tab bar stay put even if a
+screen's content grows taller than the viewport (e.g. RSVP's optional
+guest-names/dietary fields expanding).
 
 ## RSVP & personalisation
 
-The Majlis section of `StoryPage.tsx` collects a Yes/Maybe/No RSVP, a
+The RSVP tab of `StoryPage.tsx` collects a Yes/Maybe/No RSVP, a
 headcount (1–8, editable any time), an
 optional list of who's coming with them (free text, shown once headcount
 is above 1), and an optional dietary-preferences note — all saved locally
@@ -235,7 +241,7 @@ Sciences, Karachi), the common convention across South Asia; change the
 ## Meet the Hosts
 
 Setting `hostsBioEn`/`hostsBioMl` in `src/config/event.ts` (or `/admin` →
-Event Settings) shows a short bio card in the Courtyard section —
+Event Settings) shows a short bio card on the Home tab —
 useful for guests who are distant relatives or friends-of-
 friends and may not know Majeed & Kamarunnisa well. `hostsPhotoUrl` adds
 a circular photo alongside it (a path into `public/`, e.g. `/hosts.jpg`,
@@ -291,7 +297,7 @@ sensible default programme; set it to `[]` to skip the timeline entirely.
 
 ## Remind me on the day
 
-The Veranda section has an optional **🔔 Remind Me** button that requests
+The Details tab has an optional **🔔 Remind Me** button that requests
 notification permission and, from then on, shows a local "Today's the
 day!" notification if the guest has the app open (or reopens it) on the
 event date. This is a same-day nudge, not a guaranteed advance alarm — a
@@ -587,15 +593,16 @@ src/
                            # useEventDayForecast, useEventDayReminder, usePrayerTimes,
                            # useTextScale, useDeviceHeading
   features/
-    invitation/           # StoryPage (single scrolling page), DoorsOpening, ContactButtons
+    invitation/           # StoryPage (tabbed app shell), DoorsOpening, ContactButtons
     journey/               # intro, permission, arrival reveal, event mode, thank you
     map/                    # JourneyMap (MapLibre screen)
     guestbook/
     faq/                    # Ask DUA floating widget
     admin/                  # /admin dashboard, demo controls, settings form
     display/                # /wall — Event Display Mode, for a TV at the venue
-  components/             # Button, Card, BottomSheet, LanguageSwitcher, HomeIllustration,
-                           # AnnouncementBanner, InstallAppBanner, TextSizeToggle, CompassArrow
+  components/             # Button, Card, BottomSheet, BottomTabBar, LanguageSwitcher,
+                           # HomeIllustration, AnnouncementBanner, InstallAppBanner,
+                           # TextSizeToggle, CompassArrow
   sw.ts                   # custom service worker (injectManifest)
 ```
 

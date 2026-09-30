@@ -1,8 +1,9 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '../../components/Button';
 import { CountdownTimer } from '../../components/CountdownTimer';
 import { HomeIllustration } from '../../components/HomeIllustration';
+import { BottomTabBar, type StoryTab } from '../../components/BottomTabBar';
 import { bismillahArabic } from '../../data/translations';
 import { useEventConfig } from '../../hooks/useEventConfig';
 import { useLanguage } from '../../hooks/useLanguage';
@@ -17,11 +18,20 @@ import { directionsLink } from '../../utils/contact';
 import { notifyHost } from '../../services/notifyHostService';
 
 const TZ = 'Asia/Kolkata';
+const TAB_ORDER: StoryTab[] = ['home', 'details', 'rsvp', 'journey'];
+
+// Each screen mounts fresh on tab switch (no scroll position to reveal
+// against), so this is a simple appear-in rather than a scroll-triggered one.
 const reveal = {
-  initial: { opacity: 0, y: 26 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, amount: 0.3 },
-  transition: { duration: 0.7, ease: 'easeOut' as const },
+  initial: { opacity: 0, y: 14 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.4, ease: 'easeOut' as const },
+};
+
+const screenVariants = {
+  enter: (dir: number) => ({ x: dir > 0 ? 40 : -40, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir: number) => ({ x: dir > 0 ? -40 : 40, opacity: 0 }),
 };
 
 export function StoryPage({
@@ -44,7 +54,13 @@ export function StoryPage({
   const [guests, setGuests] = useState(storageService.getGuests());
   const [dietaryNotes, setDietaryNotes] = useState(storageService.getDietaryNotes());
   const rsvpByDate = formatRsvpByDate();
-  const sections = useRef<(HTMLElement | null)[]>([]);
+
+  const [tab, setTab] = useState<StoryTab>('home');
+  const [direction, setDirection] = useState(1);
+  const goToTab = (next: StoryTab) => {
+    setDirection(TAB_ORDER.indexOf(next) > TAB_ORDER.indexOf(tab) ? 1 : -1);
+    setTab(next);
+  };
 
   const start = eventStartDateTime();
   const day = new Intl.DateTimeFormat('en-IN', { day: 'numeric', timeZone: TZ }).format(start);
@@ -132,257 +148,289 @@ export function StoryPage({
           ? t('rsvpNoResponse')
           : '';
 
-  const scrollTo = (i: number) => sections.current[i]?.scrollIntoView({ behavior: 'smooth' });
-  const setRef = (i: number) => (el: HTMLElement | null) => {
-    sections.current[i] = el;
-  };
-
   return (
     <div className="relative bg-cream">
-      {/* I. Courtyard */}
-      <motion.section
-        ref={setRef(0)}
-        viewport={{ amount: 0.5 }}
-        className="paper-grain relative flex min-h-dvh flex-col items-center px-8 pb-10 pt-24 text-center bg-[linear-gradient(180deg,#f6ead2,#efe4d0)]"
-      >
-        <motion.div {...reveal} className="mt-5 h-60 w-52 overflow-hidden rounded-t-full border-2 border-emerald bg-ivory">
-          <HomeIllustration className="mt-14 h-auto w-[135%] max-w-none -translate-x-[13%]" />
-        </motion.div>
-        {guestName && (
-          <motion.p {...reveal} className="mt-5 font-heading text-3xl italic text-gold-deep">
-            {t('dearGuest')} {guestName},
-          </motion.p>
-        )}
-        {guestNote && (
-          <motion.p {...reveal} className="mt-2 max-w-[19rem] text-sm italic text-emerald">
-            {guestNote}
-          </motion.p>
-        )}
-        <motion.p {...reveal} dir="rtl" className="mt-3 font-display text-2xl text-forest">{bismillahArabic}</motion.p>
-        <motion.p {...reveal} className="mt-4 max-w-[19rem] text-[15px] leading-relaxed text-charcoal/80">{welcome}</motion.p>
-        {hostsBio && (
-          <motion.div {...reveal} className="mt-5 flex max-w-[19rem] flex-col items-center gap-2 rounded-2xl border border-emerald/25 bg-ivory p-4">
-            {eventConfig.hostsPhotoUrl && (
-              <img
-                src={eventConfig.hostsPhotoUrl}
-                alt={eventConfig.hostNames}
-                className="h-16 w-16 rounded-full object-cover border-2 border-gold/50"
-              />
+      <AnimatePresence mode="wait" custom={direction} initial={false}>
+        {tab === 'home' && (
+          <motion.section
+            key="home"
+            custom={direction}
+            variants={screenVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.28, ease: 'easeOut' }}
+            className="paper-grain relative flex h-dvh flex-col items-center overflow-y-auto px-8 pb-28 pt-24 text-center bg-[linear-gradient(180deg,#f6ead2,#efe4d0)]"
+          >
+            <motion.div {...reveal} className="mt-5 h-60 w-52 overflow-hidden rounded-t-full border-2 border-emerald bg-ivory">
+              <HomeIllustration className="mt-14 h-auto w-[135%] max-w-none -translate-x-[13%]" />
+            </motion.div>
+            {guestName && (
+              <motion.p {...reveal} className="mt-5 font-heading text-3xl italic text-gold-deep">
+                {t('dearGuest')} {guestName},
+              </motion.p>
             )}
-            <p className="text-xs font-semibold uppercase tracking-[0.15em] text-gold-deep">{t('meetTheHosts')}</p>
-            <p className="text-sm leading-relaxed text-charcoal/75">{hostsBio}</p>
-          </motion.div>
-        )}
-        <div className="flex-1" />
-        <button type="button" onClick={() => scrollTo(1)} aria-label="Scroll down" className="mt-8 flex flex-col items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-charcoal/55">
-          <motion.span animate={{ y: [0, 6, 0] }} transition={{ duration: 1.6, repeat: Infinity }} className="text-2xl text-gold-deep">↓</motion.span>
-        </button>
-      </motion.section>
-
-      {/* II. Veranda */}
-      <motion.section
-        ref={setRef(1)}
-        viewport={{ amount: 0.5 }}
-        className="paper-grain relative min-h-dvh bg-[#e6d3b0] px-7 pb-12 pt-20"
-      >
-        <div className="absolute inset-x-0 top-0 h-3.5 bg-[linear-gradient(180deg,#3b2416,#5a3a22)]" />
-        {isLiveToday && (
-          <p className="mx-auto mt-3 w-fit rounded-full border border-gold-deep/40 bg-gold/20 px-4 py-1 text-sm font-semibold text-gold-deep">
-            {t('eventIsLiveToday')}
-          </p>
-        )}
-        <motion.div {...reveal} className="mt-5 text-center">
-          <div className="font-heading text-[9rem] font-medium leading-[0.85] text-forest">{day}</div>
-          <div className="font-heading text-3xl italic text-emerald">{monthYear}</div>
-          <div className="mt-2 text-[13px] text-charcoal/65">{weekday}{hijri ? ` · ${hijri}` : ''}</div>
-        </motion.div>
-
-        <motion.div {...reveal} className="mt-6 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border border-emerald/25 bg-ivory p-4">
-            <p className="text-[10.5px] uppercase tracking-[0.2em] text-gold-deep">{t('timeLabel')}</p>
-            <p className="mt-1.5 font-heading text-2xl leading-tight text-forest">{formatEventTimeRange()}</p>
-          </div>
-          <div className="rounded-2xl border border-emerald/25 bg-ivory p-4">
-            <p className="text-[10.5px] uppercase tracking-[0.2em] text-gold-deep">{t('placeLabel')}</p>
-            <p className="mt-1.5 font-heading text-2xl leading-tight text-forest">
-              {eventConfig.addressLines[0]},<br />{eventConfig.addressLines[1].split(',')[0]}
-            </p>
-          </div>
-        </motion.div>
-        {(prayerTimes || weather) && (
-          <motion.div {...reveal} className="mt-3 rounded-2xl border border-emerald/25 bg-ivory p-4 text-left space-y-2">
-            {prayerTimes && (
-              <div>
-                <p className="text-[10.5px] uppercase tracking-[0.2em] text-gold-deep mb-1">🕌 {t('prayerTimesAtDua')}</p>
-                <div className="flex gap-5 text-sm text-forest">
-                  <span>{t('dhuhr')}: {prayerTimes.dhuhr}</span>
-                  <span>{t('asr')}: {prayerTimes.asr}</span>
-                </div>
-              </div>
+            {guestNote && (
+              <motion.p {...reveal} className="mt-2 max-w-[19rem] text-sm italic text-emerald">
+                {guestNote}
+              </motion.p>
             )}
-            {weather && (
-              <p className={`text-[13px] text-forest ${prayerTimes ? 'pt-2 border-t border-emerald/15' : ''}`}>
-                {t('weatherAtDua')}: {weather.temperatureCelsius}°C, {weather.description}
+            <motion.p {...reveal} dir="rtl" className="mt-3 font-display text-2xl text-forest">{bismillahArabic}</motion.p>
+            <motion.p {...reveal} className="mt-4 max-w-[19rem] text-[15px] leading-relaxed text-charcoal/80">{welcome}</motion.p>
+            {hostsBio && (
+              <motion.div {...reveal} className="mt-5 flex max-w-[19rem] flex-col items-center gap-2 rounded-2xl border border-emerald/25 bg-ivory p-4">
+                {eventConfig.hostsPhotoUrl && (
+                  <img
+                    src={eventConfig.hostsPhotoUrl}
+                    alt={eventConfig.hostNames}
+                    className="h-16 w-16 rounded-full object-cover border-2 border-gold/50"
+                  />
+                )}
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-gold-deep">{t('meetTheHosts')}</p>
+                <p className="text-sm leading-relaxed text-charcoal/75">{hostsBio}</p>
+              </motion.div>
+            )}
+            <div className="flex-1" />
+            <motion.div {...reveal} className="w-full max-w-xs">
+              <Button fullWidth onClick={() => goToTab('details')}>{t('continueLabel')}</Button>
+            </motion.div>
+          </motion.section>
+        )}
+
+        {tab === 'details' && (
+          <motion.section
+            key="details"
+            custom={direction}
+            variants={screenVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.28, ease: 'easeOut' }}
+            className="paper-grain relative h-dvh overflow-y-auto bg-[#e6d3b0] px-7 pb-28 pt-20"
+          >
+            <div className="absolute inset-x-0 top-0 h-3.5 bg-[linear-gradient(180deg,#3b2416,#5a3a22)]" />
+            {isLiveToday && (
+              <p className="mx-auto mt-3 w-fit rounded-full border border-gold-deep/40 bg-gold/20 px-4 py-1 text-sm font-semibold text-gold-deep">
+                {t('eventIsLiveToday')}
               </p>
             )}
-            {eventDayForecast?.isRainy && <p className="text-[13px] text-gold-deep">{t('rainExpectedTip')}</p>}
-          </motion.div>
-        )}
-        {eventConfig.travelInfo && (
-          <motion.div {...reveal} className="mt-3 rounded-2xl border border-emerald/25 bg-ivory p-4 text-left">
-            <p className="text-[10.5px] uppercase tracking-[0.2em] text-gold-deep mb-1.5">{t('travellingFromAfar')}</p>
-            <p className="text-sm text-forest">✈️ {t('nearestAirportLabel')}: {eventConfig.travelInfo.nearestAirport}</p>
-            <p className="mt-1 text-sm text-forest">🚉 {t('nearestStationLabel')}: {eventConfig.travelInfo.nearestRailwayStation}</p>
-          </motion.div>
-        )}
+            <motion.div {...reveal} className="mt-5 text-center">
+              <div className="font-heading text-[9rem] font-medium leading-[0.85] text-forest">{day}</div>
+              <div className="font-heading text-3xl italic text-emerald">{monthYear}</div>
+              <div className="mt-2 text-[13px] text-charcoal/65">{weekday}{hijri ? ` · ${hijri}` : ''}</div>
+            </motion.div>
 
-        <motion.div {...reveal} className="mt-6"><CountdownTimer /></motion.div>
-
-        <motion.div {...reveal} className="mt-6 flex gap-2.5">
-          <a href={calendarLink()} target="_blank" rel="noreferrer" className="flex-1">
-            <Button variant="outline" fullWidth className="!px-2 text-[13px]">{t('saveTheDate')}</Button>
-          </a>
-          <Button variant="outline" className="flex-1 !px-2 text-[13px]" onClick={onOpenContact}>{t('contactHosts')}</Button>
-        </motion.div>
-        {reminder.supported && (
-          <motion.div {...reveal} className="mt-2.5">
-            {reminder.optedIn ? (
-              <p className="text-center text-xs text-emerald">{t('reminderOnCopy')}</p>
-            ) : (
-              <Button variant="ghost" fullWidth className="!py-2 text-[13px]" onClick={reminder.optIn}>
-                {t('remindMeOnTheDay')}
-              </Button>
+            <motion.div {...reveal} className="mt-6 grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-emerald/25 bg-ivory p-4">
+                <p className="text-[10.5px] uppercase tracking-[0.2em] text-gold-deep">{t('timeLabel')}</p>
+                <p className="mt-1.5 font-heading text-2xl leading-tight text-forest">{formatEventTimeRange()}</p>
+              </div>
+              <div className="rounded-2xl border border-emerald/25 bg-ivory p-4">
+                <p className="text-[10.5px] uppercase tracking-[0.2em] text-gold-deep">{t('placeLabel')}</p>
+                <p className="mt-1.5 font-heading text-2xl leading-tight text-forest">
+                  {eventConfig.addressLines[0]},<br />{eventConfig.addressLines[1].split(',')[0]}
+                </p>
+              </div>
+            </motion.div>
+            {(prayerTimes || weather) && (
+              <motion.div {...reveal} className="mt-3 rounded-2xl border border-emerald/25 bg-ivory p-4 text-left space-y-2">
+                {prayerTimes && (
+                  <div>
+                    <p className="text-[10.5px] uppercase tracking-[0.2em] text-gold-deep mb-1">🕌 {t('prayerTimesAtDua')}</p>
+                    <div className="flex gap-5 text-sm text-forest">
+                      <span>{t('dhuhr')}: {prayerTimes.dhuhr}</span>
+                      <span>{t('asr')}: {prayerTimes.asr}</span>
+                    </div>
+                  </div>
+                )}
+                {weather && (
+                  <p className={`text-[13px] text-forest ${prayerTimes ? 'pt-2 border-t border-emerald/15' : ''}`}>
+                    {t('weatherAtDua')}: {weather.temperatureCelsius}°C, {weather.description}
+                  </p>
+                )}
+                {eventDayForecast?.isRainy && <p className="text-[13px] text-gold-deep">{t('rainExpectedTip')}</p>}
+              </motion.div>
             )}
-          </motion.div>
+            {eventConfig.travelInfo && (
+              <motion.div {...reveal} className="mt-3 rounded-2xl border border-emerald/25 bg-ivory p-4 text-left">
+                <p className="text-[10.5px] uppercase tracking-[0.2em] text-gold-deep mb-1.5">{t('travellingFromAfar')}</p>
+                <p className="text-sm text-forest">✈️ {t('nearestAirportLabel')}: {eventConfig.travelInfo.nearestAirport}</p>
+                <p className="mt-1 text-sm text-forest">🚉 {t('nearestStationLabel')}: {eventConfig.travelInfo.nearestRailwayStation}</p>
+              </motion.div>
+            )}
+
+            <motion.div {...reveal} className="mt-6"><CountdownTimer /></motion.div>
+
+            <motion.div {...reveal} className="mt-6 flex gap-2.5">
+              <a href={calendarLink()} target="_blank" rel="noreferrer" className="flex-1">
+                <Button variant="outline" fullWidth className="!px-2 text-[13px]">{t('saveTheDate')}</Button>
+              </a>
+              <Button variant="outline" className="flex-1 !px-2 text-[13px]" onClick={onOpenContact}>{t('contactHosts')}</Button>
+            </motion.div>
+            {reminder.supported && (
+              <motion.div {...reveal} className="mt-2.5">
+                {reminder.optedIn ? (
+                  <p className="text-center text-xs text-emerald">{t('reminderOnCopy')}</p>
+                ) : (
+                  <Button variant="ghost" fullWidth className="!py-2 text-[13px]" onClick={reminder.optIn}>
+                    {t('remindMeOnTheDay')}
+                  </Button>
+                )}
+              </motion.div>
+            )}
+          </motion.section>
         )}
-      </motion.section>
 
-      {/* III. Majlis */}
-      <motion.section
-        ref={setRef(2)}
-        viewport={{ amount: 0.5 }}
-        className="relative flex min-h-dvh flex-col justify-center bg-forest px-7 pb-16 pt-24 text-cream"
-      >
-        <motion.h2 {...reveal} className="mt-5 text-center font-heading text-4xl italic leading-tight">{t('willYouJoinUs')}</motion.h2>
-        {!rsvp && rsvpByDate && (
-          <motion.p {...reveal} className="mt-2 text-center text-sm text-[#e8c77a]">
-            {t('kindlyRsvpBy')} {rsvpByDate}
-          </motion.p>
-        )}
+        {tab === 'rsvp' && (
+          <motion.section
+            key="rsvp"
+            custom={direction}
+            variants={screenVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.28, ease: 'easeOut' }}
+            className="relative flex h-dvh flex-col overflow-y-auto bg-forest px-7 pb-28 pt-24 text-cream"
+          >
+            <motion.h2 {...reveal} className="mt-5 text-center font-heading text-4xl italic leading-tight">{t('willYouJoinUs')}</motion.h2>
+            {!rsvp && rsvpByDate && (
+              <motion.p {...reveal} className="mt-2 text-center text-sm text-[#e8c77a]">
+                {t('kindlyRsvpBy')} {rsvpByDate}
+              </motion.p>
+            )}
 
-        <div className="mt-7 flex flex-col gap-2.5">
-          {rsvpOptions.map((o) => {
-            const selected = rsvp === o.id;
-            return (
-              <motion.button
-                key={o.id}
-                type="button"
-                aria-pressed={selected}
-                onClick={() => chooseRsvp(o.id)}
-                whileTap={{ scale: 0.98 }}
-                animate={{ backgroundColor: selected ? '#e8c77a' : 'rgba(232,199,122,0)', color: selected ? '#3b2416' : '#f6ead2' }}
-                className="flex min-h-14 items-center justify-between rounded-2xl border border-[#e8c77a]/60 px-5 text-left text-[15px] font-medium"
-              >
-                {o.label}
-                <span className={`h-5 w-5 rounded-full border-[1.5px] ${selected ? 'border-forest bg-forest' : 'border-[#e8c77a]/60'}`} />
-              </motion.button>
-            );
-          })}
-        </div>
+            <div className="mt-7 flex flex-col gap-2.5">
+              {rsvpOptions.map((o) => {
+                const selected = rsvp === o.id;
+                return (
+                  <motion.button
+                    key={o.id}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => chooseRsvp(o.id)}
+                    whileTap={{ scale: 0.98 }}
+                    animate={{ backgroundColor: selected ? '#e8c77a' : 'rgba(232,199,122,0)', color: selected ? '#3b2416' : '#f6ead2' }}
+                    className="flex min-h-14 items-center justify-between rounded-2xl border border-[#e8c77a]/60 px-5 text-left text-[15px] font-medium"
+                  >
+                    {o.label}
+                    <span className={`h-5 w-5 rounded-full border-[1.5px] ${selected ? 'border-forest bg-forest' : 'border-[#e8c77a]/60'}`} />
+                  </motion.button>
+                );
+              })}
+            </div>
 
-        <div className="mt-6 flex items-center justify-between border-t border-[#e8c77a]/30 pt-5">
-          <div>
-            <p className="text-sm font-medium">{t('howManyOfYou')}</p>
-            <p className="mt-0.5 text-xs text-cream/60">{t('includingYou')}</p>
-          </div>
-          <div className="flex items-center gap-3.5">
-            <motion.button type="button" whileTap={{ scale: 0.9 }} aria-label="Fewer guests" onClick={() => changeGuests(guests - 1)} className="h-12 w-12 rounded-full border border-[#e8c77a] text-xl text-[#e8c77a]">−</motion.button>
-            <AnimatePresence mode="popLayout">
-              <motion.span
-                key={guests}
-                initial={{ y: 14, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -14, opacity: 0 }}
-                className="min-w-9 text-center font-heading text-5xl"
-              >
-                {guests}
-              </motion.span>
+            <div className="mt-6 flex items-center justify-between border-t border-[#e8c77a]/30 pt-5">
+              <div>
+                <p className="text-sm font-medium">{t('howManyOfYou')}</p>
+                <p className="mt-0.5 text-xs text-cream/60">{t('includingYou')}</p>
+              </div>
+              <div className="flex items-center gap-3.5">
+                <motion.button type="button" whileTap={{ scale: 0.9 }} aria-label="Fewer guests" onClick={() => changeGuests(guests - 1)} className="h-12 w-12 rounded-full border border-[#e8c77a] text-xl text-[#e8c77a]">−</motion.button>
+                <AnimatePresence mode="popLayout">
+                  <motion.span
+                    key={guests}
+                    initial={{ y: 14, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -14, opacity: 0 }}
+                    className="min-w-9 text-center font-heading text-5xl"
+                  >
+                    {guests}
+                  </motion.span>
+                </AnimatePresence>
+                <motion.button type="button" whileTap={{ scale: 0.9 }} aria-label="More guests" onClick={() => changeGuests(guests + 1)} className="h-12 w-12 rounded-full bg-[#e8c77a] text-xl text-forest">+</motion.button>
+              </div>
+            </div>
+
+            {rsvp === 'yes' && guests > 1 && (
+              <motion.div {...reveal} className="mt-4">
+                <label htmlFor="guest-names" className="block text-xs font-medium text-cream/60 mb-1.5">
+                  {t('guestNamesOptional')}
+                </label>
+                <input
+                  id="guest-names"
+                  value={guestNames}
+                  onChange={(e) => setGuestNames(e.target.value)}
+                  onBlur={handleGuestNamesBlur}
+                  placeholder={t('guestNamesPlaceholder')}
+                  className="w-full rounded-xl border border-[#e8c77a]/40 bg-transparent px-4 py-3 text-[15px] text-cream placeholder:text-cream/40 outline-none focus:border-[#e8c77a]"
+                />
+              </motion.div>
+            )}
+            {rsvp === 'yes' && (
+              <motion.div {...reveal} className="mt-4">
+                <label htmlFor="dietary-notes" className="block text-xs font-medium text-cream/60 mb-1.5">
+                  {t('dietaryPreferencesOptional')}
+                </label>
+                <input
+                  id="dietary-notes"
+                  value={dietaryNotes}
+                  onChange={(e) => setDietaryNotes(e.target.value)}
+                  onBlur={handleDietaryBlur}
+                  placeholder={t('dietaryPreferencesPlaceholder')}
+                  className="w-full rounded-xl border border-[#e8c77a]/40 bg-transparent px-4 py-3 text-[15px] text-cream placeholder:text-cream/40 outline-none focus:border-[#e8c77a]"
+                />
+              </motion.div>
+            )}
+
+            <AnimatePresence mode="wait">
+              {confirmation && (
+                <motion.p
+                  key={rsvp}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="mt-6 rounded-2xl border border-[#e8c77a]/35 bg-[#e8c77a]/10 p-4 text-[14px] leading-relaxed"
+                  aria-live="polite"
+                >
+                  {confirmation}
+                </motion.p>
+              )}
             </AnimatePresence>
-            <motion.button type="button" whileTap={{ scale: 0.9 }} aria-label="More guests" onClick={() => changeGuests(guests + 1)} className="h-12 w-12 rounded-full bg-[#e8c77a] text-xl text-forest">+</motion.button>
-          </div>
-        </div>
-
-        {rsvp === 'yes' && guests > 1 && (
-          <motion.div {...reveal} className="mt-4">
-            <label htmlFor="guest-names" className="block text-xs font-medium text-cream/60 mb-1.5">
-              {t('guestNamesOptional')}
-            </label>
-            <input
-              id="guest-names"
-              value={guestNames}
-              onChange={(e) => setGuestNames(e.target.value)}
-              onBlur={handleGuestNamesBlur}
-              placeholder={t('guestNamesPlaceholder')}
-              className="w-full rounded-xl border border-[#e8c77a]/40 bg-transparent px-4 py-3 text-[15px] text-cream placeholder:text-cream/40 outline-none focus:border-[#e8c77a]"
-            />
-          </motion.div>
-        )}
-        {rsvp === 'yes' && (
-          <motion.div {...reveal} className="mt-4">
-            <label htmlFor="dietary-notes" className="block text-xs font-medium text-cream/60 mb-1.5">
-              {t('dietaryPreferencesOptional')}
-            </label>
-            <input
-              id="dietary-notes"
-              value={dietaryNotes}
-              onChange={(e) => setDietaryNotes(e.target.value)}
-              onBlur={handleDietaryBlur}
-              placeholder={t('dietaryPreferencesPlaceholder')}
-              className="w-full rounded-xl border border-[#e8c77a]/40 bg-transparent px-4 py-3 text-[15px] text-cream placeholder:text-cream/40 outline-none focus:border-[#e8c77a]"
-            />
-          </motion.div>
+          </motion.section>
         )}
 
-        <AnimatePresence mode="wait">
-          {confirmation && (
-            <motion.p
-              key={rsvp}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="mt-6 rounded-2xl border border-[#e8c77a]/35 bg-[#e8c77a]/10 p-4 text-[14px] leading-relaxed"
-              aria-live="polite"
-            >
-              {confirmation}
-            </motion.p>
-          )}
-        </AnimatePresence>
-      </motion.section>
+        {tab === 'journey' && (
+          <motion.section
+            key="journey"
+            custom={direction}
+            variants={screenVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.28, ease: 'easeOut' }}
+            className="relative flex h-dvh flex-col items-center overflow-y-auto bg-[linear-gradient(180deg,#7d8b68,#66744f)] px-8 pb-40 pt-10 text-center text-cream"
+          >
+            <svg width="150" height="128" viewBox="0 0 220 190" fill="none" className="mt-1" aria-hidden="true">
+              <motion.path initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.2 }} d="M20 190 V96 a90 90 0 0 1 180 0 V190" stroke="#f3e2b3" strokeWidth="3" />
+              <path d="M44 190 V100 a66 66 0 0 1 132 0 V190" stroke="#f3e2b3" strokeWidth="1.4" strokeDasharray="4 6" />
+              <line x1="110" y1="34" x2="110" y2="190" stroke="#f3e2b3" strokeWidth="1.6" />
+              <circle cx="96" cy="120" r="5" stroke="#f3e2b3" strokeWidth="1.6" />
+              <circle cx="124" cy="120" r="5" stroke="#f3e2b3" strokeWidth="1.6" />
+            </svg>
+            <motion.h2 {...reveal} className="mt-4 font-heading text-4xl italic leading-tight">{t('readyToCome')}</motion.h2>
+            <motion.p {...reveal} className="mt-2 max-w-[19rem] text-[14px] leading-relaxed text-cream/85">{t('journeyIntroDescription')}</motion.p>
+            <p className="mt-2 max-w-[18rem] text-xs leading-relaxed text-cream/65">{t('locationPrivacyCopy')}</p>
+            <div className="flex-1 min-h-4" />
+            <Button fullWidth onClick={onStartJourney} className="mt-6 !bg-cream !text-forest">{t('startMyJourneyEmoji')}</Button>
+            <a href={directionsLink()} target="_blank" rel="noreferrer" className="mt-3 w-full">
+              <Button fullWidth variant="outline" className="!border-cream/60 !text-cream">{t('getDirections')}</Button>
+            </a>
+            <p className="mt-2 max-w-[18rem] text-xs leading-relaxed text-cream/60">{t('getDirectionsHint')}</p>
+          </motion.section>
+        )}
+      </AnimatePresence>
 
-      {/* IV. Gate */}
-      <motion.section
-        ref={setRef(3)}
-        viewport={{ amount: 0.5 }}
-        className="relative flex min-h-dvh flex-col items-center bg-[linear-gradient(180deg,#7d8b68,#66744f)] px-8 pb-12 pt-16 text-center text-cream"
-      >
-        <svg width="200" height="170" viewBox="0 0 220 190" fill="none" className="mt-[10vh]" aria-hidden="true">
-          <motion.path initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }} transition={{ duration: 1.4 }} d="M20 190 V96 a90 90 0 0 1 180 0 V190" stroke="#f3e2b3" strokeWidth="3" />
-          <path d="M44 190 V100 a66 66 0 0 1 132 0 V190" stroke="#f3e2b3" strokeWidth="1.4" strokeDasharray="4 6" />
-          <line x1="110" y1="34" x2="110" y2="190" stroke="#f3e2b3" strokeWidth="1.6" />
-          <circle cx="96" cy="120" r="5" stroke="#f3e2b3" strokeWidth="1.6" />
-          <circle cx="124" cy="120" r="5" stroke="#f3e2b3" strokeWidth="1.6" />
-        </svg>
-        <motion.h2 {...reveal} className="mt-6 font-heading text-4xl italic leading-tight">{t('readyToCome')}</motion.h2>
-        <motion.p {...reveal} className="mt-3 max-w-[19rem] text-[14px] leading-relaxed text-cream/85">{t('journeyIntroDescription')}</motion.p>
-        <p className="mt-3 max-w-[18rem] text-xs leading-relaxed text-cream/65">{t('locationPrivacyCopy')}</p>
-        <div className="flex-1" />
-        <Button fullWidth onClick={onStartJourney} className="mt-8 !bg-cream !text-forest">{t('startMyJourneyEmoji')}</Button>
-        <a href={directionsLink()} target="_blank" rel="noreferrer" className="mt-3 w-full">
-          <Button fullWidth variant="outline" className="!border-cream/60 !text-cream">{t('getDirections')}</Button>
-        </a>
-        <p className="mt-2 max-w-[18rem] text-xs leading-relaxed text-cream/60">{t('getDirectionsHint')}</p>
-        <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="mt-4 min-h-11 text-sm text-cream/75">{t('notNow')}</button>
-      </motion.section>
+      <BottomTabBar
+        active={tab}
+        onChange={goToTab}
+        badge={rsvp ? { rsvp: '✓' } : undefined}
+        tabs={[
+          { key: 'home', icon: '🏠', label: t('tabHome') },
+          { key: 'details', icon: '📅', label: t('tabDetails') },
+          { key: 'rsvp', icon: '💌', label: t('tabRsvp') },
+          { key: 'journey', icon: '🚗', label: t('tabJourney') },
+        ]}
+      />
     </div>
   );
 }

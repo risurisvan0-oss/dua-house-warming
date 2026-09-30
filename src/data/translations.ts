@@ -56,6 +56,12 @@ export const translations = {
     ml: 'താങ്കളെ ഞങ്ങൾ ഏറെ മിസ് ചെയ്യും ❤️',
   },
   continueLabel: { en: 'Continue', ml: 'തുടരുക' },
+
+  // ---- Bottom tab bar ----
+  tabHome: { en: 'Home', ml: 'ഹോം' },
+  tabDetails: { en: 'Details', ml: 'വിവരങ്ങൾ' },
+  tabRsvp: { en: 'RSVP', ml: 'RSVP' },
+  tabJourney: { en: 'Journey', ml: 'യാത്ര' },
   dietaryPreferencesOptional: { en: 'Dietary preferences (optional)', ml: 'ഭക്ഷണ ക്രമീകരണങ്ങൾ (ഓപ്ഷണൽ)' },
   dietaryPreferencesPlaceholder: {
     en: 'e.g. vegetarian, no shellfish',

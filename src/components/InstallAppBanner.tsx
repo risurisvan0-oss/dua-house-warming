@@ -12,7 +12,7 @@ import { isIos, isRunningStandalone, type BeforeInstallPromptEvent } from '../ut
  * `beforeinstallprompt`); iOS Safari never fires that event, so it gets
  * short Share → Add to Home Screen instructions instead.
  */
-export function InstallAppBanner() {
+export function InstallAppBanner({ raised }: { raised?: boolean } = {}) {
   const { t } = useLanguage();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [dismissed, setDismissed] = useState(() => storageService.hasDismissedInstallPrompt());
@@ -52,8 +52,14 @@ export function InstallAppBanner() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           // Sits above the floating "Ask DUA" button (bottom-right, ~4.5rem
-          // tall including its own safe-area padding) rather than under it.
-          className="fixed inset-x-0 z-20 px-4 bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))+4.5rem)]"
+          // tall including its own safe-area padding) rather than under it —
+          // and, when `raised`, above the bottom tab bar too (see
+          // BottomTabBar.tsx / AskDuaWidget's own `raised` prop).
+          className={`fixed inset-x-0 z-20 px-4 ${
+            raised
+              ? 'bottom-[calc(9rem+max(0.75rem,env(safe-area-inset-bottom)))]'
+              : 'bottom-[calc(max(1.25rem,env(safe-area-inset-bottom))+4.5rem)]'
+          }`}
         >
           <div className="mx-auto max-w-lg rounded-2xl border border-gold-deep/25 bg-ivory p-4 shadow-lg">
             <p className="font-heading text-base text-forest mb-1">{t('installAppTitle')}</p>

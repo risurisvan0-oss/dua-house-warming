@@ -146,6 +146,9 @@ function GuestApp() {
   const showChrome = !['opening', 'map', 'arrival'].includes(screen);
   const showTopBar = showChrome;
   const showInstallPrompt = showChrome;
+  // StoryPage (the 'story' screen) has its own fixed bottom tab bar — raise
+  // the floating Ask DUA button and install prompt above it there.
+  const hasBottomTabBar = screen === 'story';
 
   return (
     <div className="relative">
@@ -234,10 +237,10 @@ function GuestApp() {
       </AnimatePresence>
 
       {!['opening', 'arrival'].includes(screen) && (
-        <AskDuaWidget onStartJourney={() => setScreen('permission')} />
+        <AskDuaWidget onStartJourney={() => setScreen('permission')} raised={hasBottomTabBar} />
       )}
 
-      {showInstallPrompt && <InstallAppBanner />}
+      {showInstallPrompt && <InstallAppBanner raised={hasBottomTabBar} />}
 
       <BottomSheet open={contactOpen} onClose={() => setContactOpen(false)} title={t('contactHosts')}>
         <ContactButtons />

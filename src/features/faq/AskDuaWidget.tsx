@@ -12,7 +12,7 @@ interface ChatTurn {
   action?: 'startJourney' | 'callHost' | 'whatsappHost';
 }
 
-export function AskDuaWidget({ onStartJourney }: { onStartJourney: () => void }) {
+export function AskDuaWidget({ onStartJourney, raised }: { onStartJourney: () => void; raised?: boolean }) {
   const { t, language } = useLanguage();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -35,7 +35,11 @@ export function AskDuaWidget({ onStartJourney }: { onStartJourney: () => void })
         onClick={() => setOpen(true)}
         whileTap={{ scale: 0.95 }}
         aria-label={t('askDua')}
-        className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-4 z-30 flex items-center gap-2 rounded-full bg-forest px-4 py-3 text-sm font-semibold text-ivory shadow-xl shadow-forest/30"
+        // `raised` clears the bottom tab bar on the story screen (see
+        // BottomTabBar.tsx) so the floating button doesn't sit on top of it.
+        className={`fixed right-4 z-30 flex items-center gap-2 rounded-full bg-forest px-4 py-3 text-sm font-semibold text-ivory shadow-xl shadow-forest/30 ${
+          raised ? 'bottom-[calc(4.5rem+max(0.75rem,env(safe-area-inset-bottom)))]' : 'bottom-[max(1.25rem,env(safe-area-inset-bottom))]'
+        }`}
       >
         💬 {t('askDua')}
       </motion.button>
