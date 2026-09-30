@@ -18,29 +18,65 @@ export const translations = {
   },
   dragDoorsHint: { en: 'Drag the doors apart to enter', ml: 'അകത്തേക്ക് കടക്കാൻ വാതിലുകൾ വശങ്ങളിലേക്ക് വലിക്കുക' },
   openDoors: { en: 'Open the doors', ml: 'വാതിൽ തുറക്കുക' },
+  howManyOfYou: { en: 'How many of you?', ml: 'എത്ര പേർ?' },
+  includingYou: { en: 'Including you', ml: 'താങ്കൾ ഉൾപ്പെടെ' },
   guestsWord: { en: 'guests', ml: 'പേരെ' },
+  timeLabel: { en: 'Time', ml: 'സമയം' },
+  placeLabel: { en: 'Place', ml: 'സ്ഥലം' },
 
   // ---- Welcome ----
   dearGuest: { en: 'Dear', ml: 'പ്രിയപ്പെട്ട' },
+  meetTheHosts: { en: 'Meet the Hosts', ml: 'ആതിഥേയരെ പരിചയപ്പെടുക' },
 
   // ---- Event details ----
   weatherAtDua: { en: 'Weather at DUA right now', ml: 'DUA-യിലെ ഇപ്പോഴത്തെ കാലാവസ്ഥ' },
   eventIsLiveToday: { en: "🎉 It's happening today!", ml: '🎉 ഇന്നാണ് ചടങ്ങ്!' },
   saveTheDate: { en: 'Save the Date', ml: 'തീയതി സേവ് ചെയ്യുക' },
+  contactHosts: { en: 'Contact Hosts', ml: 'ആതിഥേയരെ ബന്ധപ്പെടുക' },
   callHost: { en: 'Call Host', ml: 'വിളിക്കുക' },
   whatsappHost: { en: 'WhatsApp Host', ml: 'വാട്സ്ആപ്പ്' },
+  prayerTimesAtDua: { en: 'Prayer Times at DUA', ml: 'DUA-യിലെ നമസ്കാര സമയങ്ങൾ' },
+  travellingFromAfar: { en: 'Travelling From Afar?', ml: 'ദൂരെ നിന്ന് വരുന്നുണ്ടോ?' },
 
+  // ---- RSVP ----
+  willYouJoinUs: { en: 'Will you be joining us?', ml: 'താങ്കൾ പങ്കെടുക്കുമോ?' },
+  rsvpYes: { en: "Yes, I'll be there ❤️", ml: 'ഉവ്വ്, ഞാൻ വരും ❤️' },
+  rsvpMaybe: { en: 'Maybe', ml: 'ഒരുപക്ഷേ' },
+  rsvpNo: { en: "Sorry, can't make it", ml: 'ക്ഷമിക്കണം, വരാൻ കഴിയില്ല' },
+  rsvpYesResponse: {
+    en: "Wonderful ❤️ We can't wait to welcome you to DUA.",
+    ml: 'സന്തോഷം ❤️ താങ്കളെ DUA-യിലേക്ക് സ്വാഗതം ചെയ്യാൻ ഞങ്ങൾ കാത്തിരിക്കുന്നു.',
+  },
+  rsvpMaybeResponse: {
+    en: 'Thank you ❤️ We hope to see you.',
+    ml: 'നന്ദി ❤️ താങ്കളെ കാണാൻ ഞങ്ങൾ പ്രതീക്ഷിക്കുന്നു.',
+  },
+  rsvpNoResponse: {
+    en: 'You will be warmly missed ❤️',
+    ml: 'താങ്കളെ ഞങ്ങൾ ഏറെ മിസ് ചെയ്യും ❤️',
+  },
   continueLabel: { en: 'Continue', ml: 'തുടരുക' },
-
-  // ---- Journey intro ----
-  startMyJourneyEmoji: { en: 'Start My Journey 🚗', ml: 'യാത്ര ആരംഭിക്കുക 🚗' },
-  notNow: { en: 'Not Now', ml: 'ഇപ്പോൾ വേണ്ട' },
-  getDirections: { en: 'Get Directions 📍', ml: 'വഴി കാണിക്കുക 📍' },
-  kindlyRsvpBy: { en: 'Kindly RSVP by', ml: 'ദയവായി ഈ തീയതിക്ക് മുൻപ് അറിയിക്കുക:' },
+  dietaryPreferencesOptional: { en: 'Dietary preferences (optional)', ml: 'ഭക്ഷണ ക്രമീകരണങ്ങൾ (ഓപ്ഷണൽ)' },
   dietaryPreferencesPlaceholder: {
     en: 'e.g. vegetarian, no shellfish',
     ml: 'ഉദാ. വെജിറ്റേറിയൻ, കക്കയിറച്ചി ഒഴിവാക്കുക',
   },
+  guestNamesOptional: { en: 'Names of those joining you (optional)', ml: 'കൂടെ വരുന്നവരുടെ പേരുകൾ (ഓപ്ഷണൽ)' },
+
+  // ---- Journey intro ----
+  readyToCome: { en: 'Ready to come to DUA?', ml: 'DUA-യിലേക്ക് വരാൻ തയ്യാറാണോ?' },
+  journeyIntroDescription: {
+    en: 'Start your Journey Experience and follow the route to DUA using our interactive map.',
+    ml: 'യാത്ര ആരംഭിച്ച് ഞങ്ങളുടെ ഇന്ററാക്ടീവ് മാപ്പ് ഉപയോഗിച്ച് DUA-യിലേക്കുള്ള വഴി പിന്തുടരുക.',
+  },
+  startMyJourneyEmoji: { en: 'Start My Journey 🚗', ml: 'യാത്ര ആരംഭിക്കുക 🚗' },
+  notNow: { en: 'Not Now', ml: 'ഇപ്പോൾ വേണ്ട' },
+  getDirections: { en: 'Get Directions 📍', ml: 'വഴി കാണിക്കുക 📍' },
+  getDirectionsHint: {
+    en: "Prefer your own maps app? We'll open Google Maps instead.",
+    ml: 'നിങ്ങളുടെ സ്വന്തം മാപ്സ് ആപ്പ് ഉപയോഗിക്കാൻ താൽപ്പര്യമുണ്ടോ? പകരം ഞങ്ങൾ Google Maps തുറക്കാം.',
+  },
+  kindlyRsvpBy: { en: 'Kindly RSVP by', ml: 'ദയവായി ഈ തീയതിക്ക് മുൻപ് അറിയിക്കുക:' },
   gotIt: { en: 'Got it', ml: 'മനസ്സിലായി' },
   installAppTitle: { en: 'Add DUA to your home screen', ml: 'DUA നിങ്ങളുടെ ഹോം സ്ക്രീനിൽ ചേർക്കുക' },
   installAppBodyAndroid: {
@@ -239,39 +275,6 @@ export const translations = {
   demoData: { en: 'DEMO DATA', ml: 'ഡെമോ ഡാറ്റ' },
   demoJourney: { en: 'Demo Journey', ml: 'ഡെമോ യാത്ര' },
   eventSettings: { en: 'Event Settings', ml: 'ഇവന്റ് സെറ്റിംഗ്സ്' },
-
-  // ---- House Scene (interactive home, replaces chapter-scroll) ----
-  exploreHouseHint: { en: 'Tap around our home to explore ✨', ml: 'ഞങ്ങളുടെ വീട്ടിൽ ചുറ്റിനടന്ന് നോക്കൂ ✨' },
-  hotspotWelcome: { en: 'Welcome', ml: 'സ്വാഗതം' },
-  hotspotRsvp: { en: 'RSVP', ml: 'RSVP' },
-  hotspotDay: { en: 'The Day', ml: 'ആ ദിവസം' },
-  hotspotGettingThere: { en: 'Getting There', ml: 'എത്തിച്ചേരാൻ' },
-  backToHouse: { en: '← Back to the house', ml: '← വീട്ടിലേക്ക് തിരികെ' },
-
-  // Welcome chat
-  chatMeetHostsIntro: { en: "And in case we haven't met yet —", ml: 'നമ്മൾ ഇതുവരെ കണ്ടിട്ടില്ലെങ്കിൽ —' },
-
-  // RSVP chat
-  chatRsvpQuestion: { en: 'Will you be able to join us on our special day? 🏡', ml: 'ഞങ്ങളുടെ പ്രത്യേക ദിവസത്തിൽ താങ്കൾക്ക് പങ്കെടുക്കാൻ കഴിയുമോ? 🏡' },
-  chatRsvpYesReply: { en: "Yes, I'll be there! 🎉", ml: 'ഉവ്വ്, ഞാൻ വരും! 🎉' },
-  chatRsvpMaybeReply: { en: "I'll try my best", ml: 'ഞാൻ പരമാവധി ശ്രമിക്കാം' },
-  chatRsvpNoReply: { en: "Can't make it", ml: 'വരാൻ കഴിയില്ല' },
-  chatRsvpYesFollowUp: { en: "Wonderful! ❤️ How many of you will be coming, including yourself?", ml: 'സന്തോഷം! ❤️ താങ്കൾ ഉൾപ്പെടെ എത്ര പേർ വരും?' },
-  chatRsvpGuestsConfirm: { en: 'Confirm', ml: 'സ്ഥിരീകരിക്കുക' },
-  chatRsvpAskNames: { en: "Lovely. Who's joining you? (totally optional)", ml: 'നല്ലത്. താങ്കളോടൊപ്പം ആരൊക്കെ വരും? (ഓപ്ഷണൽ)' },
-  chatRsvpAskDietary: { en: 'One last thing — any dietary preferences we should know?', ml: 'അവസാനമായി — ഭക്ഷണ ക്രമീകരണങ്ങൾ എന്തെങ്കിലും ഉണ്ടോ?' },
-  chatRsvpThanksYes: { en: "That's it — we can't wait to see you! 🎉", ml: 'ശരി — താങ്കളെ കാണാൻ ഞങ്ങൾ കാത്തിരിക്കുന്നു! 🎉' },
-  chatRsvpThanksMaybe: { en: "No pressure at all — we'd love to have you if you can make it. 💛", ml: 'സമ്മർദ്ദം വേണ്ട — കഴിയുമെങ്കിൽ വരൂ. 💛' },
-  chatRsvpThanksNo: { en: "You'll be missed! Thank you for letting us know. 💛", ml: 'താങ്കളെ ഞങ്ങൾ മിസ്സ് ചെയ്യും! അറിയിച്ചതിന് നന്ദി. 💛' },
-  chatRsvpChangeMind: { en: 'Change your answer', ml: 'ഉത്തരം മാറ്റുക' },
-
-  // The Day chat
-  chatDayIntro: { en: "Here's everything about the big day 🎉", ml: 'ആ വലിയ ദിവസത്തെക്കുറിച്ചുള്ള എല്ലാം 🎉' },
-  chatDayCountdownIntro: { en: "It's coming up soon —", ml: 'അത് അടുത്ത് വരുന്നു —' },
-
-  // Getting There chat
-  chatGettingThereIntro: { en: "Let's get you here safely! 🚗", ml: 'താങ്കളെ സുരക്ഷിതമായി ഇവിടെ എത്തിക്കാം! 🚗' },
-  chatGettingThereJourneyPrompt: { en: 'Once you set out, tap below and we\'ll guide you the whole way.', ml: 'യാത്ര ആരംഭിച്ചാൽ, താഴെ ടാപ്പ് ചെയ്യൂ, ഞങ്ങൾ വഴി കാണിക്കാം.' },
 } as const;
 
 export function translate(key: TranslationKey, lang: Language): string {

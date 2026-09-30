@@ -12,12 +12,14 @@ import { updateAppBadge } from './utils/appBadge';
 import { eventStartDateTime } from './utils/dateTime';
 import { LanguageSwitcher } from './components/LanguageSwitcher';
 import { TextSizeToggle } from './components/TextSizeToggle';
+import { BottomSheet } from './components/BottomSheet';
 import { AnnouncementBanner } from './components/AnnouncementBanner';
 import { InstallAppBanner } from './components/InstallAppBanner';
 import { useGuestCount } from './hooks/useGuestCount';
 import { useDismissibleAnnouncement } from './hooks/useDismissibleAnnouncement';
 import { DoorsOpening } from './features/invitation/DoorsOpening';
-import { HouseScene } from './features/invitation/HouseScene';
+import { StoryPage } from './features/invitation/StoryPage';
+import { ContactButtons } from './features/invitation/ContactButtons';
 import { LocationPermissionPage } from './features/journey/LocationPermissionPage';
 import { ArrivalReveal } from './features/journey/ArrivalReveal';
 import { EventModePage } from './features/journey/EventModePage';
@@ -65,6 +67,7 @@ function computeInitialScreen(): Screen {
 
 function GuestApp() {
   const [screen, setScreen] = useState<Screen>(() => computeInitialScreen());
+  const [contactOpen, setContactOpen] = useState(false);
   const [requestingLocation, setRequestingLocation] = useState(false);
   const [shareToast, setShareToast] = useState(false);
   const journey = useJourney();
@@ -184,7 +187,7 @@ function GuestApp() {
         {screen === 'opening' && <DoorsOpening key="opening" onEnter={handleEnterInvitation} />}
         {screen === 'story' && (
           <motion.div key="story" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <HouseScene onStartJourney={() => setScreen('permission')} />
+            <StoryPage onStartJourney={() => setScreen('permission')} onOpenContact={() => setContactOpen(true)} />
           </motion.div>
         )}
         {screen === 'permission' && (
@@ -235,6 +238,10 @@ function GuestApp() {
       )}
 
       {showInstallPrompt && <InstallAppBanner />}
+
+      <BottomSheet open={contactOpen} onClose={() => setContactOpen(false)} title={t('contactHosts')}>
+        <ContactButtons />
+      </BottomSheet>
     </div>
   );
 }
