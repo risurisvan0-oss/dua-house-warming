@@ -198,6 +198,11 @@ optional list of who's coming with them (free text, shown once headcount
 is above 1), and an optional dietary-preferences note — all saved locally
 per guest (`storageService.ts`) and, if configured, forwarded to the
 host's Google Sheet (see [Seeing RSVPs as a host](#seeing-rsvps-as-a-host)).
+Tapping **"Yes, I'll be there"** also fires a one-shot celebratory
+confetti burst (`src/components/ConfettiBurst.tsx`) — hand-rolled with
+Framer Motion rather than a new dependency, with each burst's particle
+trajectories randomized once via `useMemo` (not during render) so an
+unrelated re-render mid-animation can't reshuffle pieces already in flight.
 
 Setting `rsvpByDate` in `src/config/event.ts` (or `/admin` → Event
 Settings) shows a gentle "Kindly RSVP by …" reminder to guests who
@@ -625,7 +630,8 @@ src/
     admin/                  # /admin dashboard, demo controls, settings form
     display/                # /wall — Event Display Mode, for a TV at the venue
   components/             # Button, Card, BottomSheet, BottomTabBar, HomeIllustration,
-                           # AnnouncementBanner, InstallAppBanner, TextSizeToggle, CompassArrow
+                           # AnnouncementBanner, InstallAppBanner, TextSizeToggle, CompassArrow,
+                           # ConfettiBurst
   sw.ts                   # custom service worker (injectManifest)
 ```
 

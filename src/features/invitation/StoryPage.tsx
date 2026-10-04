@@ -4,6 +4,7 @@ import { Button } from '../../components/Button';
 import { CountdownTimer } from '../../components/CountdownTimer';
 import { HomeIllustration } from '../../components/HomeIllustration';
 import { BottomTabBar, type StoryTab } from '../../components/BottomTabBar';
+import { ConfettiBurst } from '../../components/ConfettiBurst';
 import { bismillahArabic } from '../../data/translations';
 import { useEventConfig } from '../../hooks/useEventConfig';
 import { useLanguage } from '../../hooks/useLanguage';
@@ -53,6 +54,7 @@ export function StoryPage({
   const [guests, setGuests] = useState(storageService.getGuests());
   const [dietaryNotes, setDietaryNotes] = useState(storageService.getDietaryNotes());
   const rsvpByDate = formatRsvpByDate();
+  const [confettiBurst, setConfettiBurst] = useState(0);
 
   const [tab, setTab] = useState<StoryTab>('home');
   const [direction, setDirection] = useState(1);
@@ -76,6 +78,7 @@ export function StoryPage({
     if (status === 'yes') {
       playChime();
       navigator.vibrate?.(30);
+      setConfettiBurst((n) => n + 1);
     }
     notifyHost({
       type: 'rsvp',
@@ -149,6 +152,7 @@ export function StoryPage({
 
   return (
     <div className="relative bg-cream">
+      <ConfettiBurst burstKey={confettiBurst} />
       <AnimatePresence mode="wait" custom={direction} initial={false}>
         {tab === 'home' && (
           <motion.section
@@ -161,6 +165,32 @@ export function StoryPage({
             transition={{ duration: 0.28, ease: 'easeOut' }}
             className="paper-grain relative flex h-dvh flex-col items-center overflow-y-auto px-8 pb-28 pt-24 text-center bg-[linear-gradient(180deg,#f6ead2,#efe4d0)]"
           >
+            {/* Ambient drifting light — a bit of living warmth behind the
+                very first thing a guest sees, same glow technique as the
+                Arrival screen's lantern embers but sparser/slower. */}
+            <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+              {Array.from({ length: 9 }).map((_, i) => {
+                const size = 4 + (i % 3) * 3;
+                const left = (i * 41) % 100;
+                const sway = 10 + (i % 4) * 5;
+                return (
+                  <motion.span
+                    key={i}
+                    className="absolute rounded-full"
+                    style={{
+                      width: size,
+                      height: size,
+                      left: `${left}%`,
+                      bottom: '-5%',
+                      background: 'var(--color-gold)',
+                      boxShadow: '0 0 7px 2px color-mix(in srgb, var(--color-gold) 55%, transparent)',
+                    }}
+                    animate={{ y: ['0%', '-115vh'], x: [0, sway, -sway, 0], opacity: [0, 0.5, 0.5, 0] }}
+                    transition={{ duration: 14 + (i % 5) * 3, repeat: Infinity, ease: 'linear', delay: i * 1.6 }}
+                  />
+                );
+              })}
+            </div>
             <motion.div {...reveal} className="mt-5 h-60 w-52 overflow-hidden rounded-t-full border-2 border-emerald bg-ivory">
               <HomeIllustration className="mt-14 h-auto w-[135%] max-w-none -translate-x-[13%]" />
             </motion.div>
