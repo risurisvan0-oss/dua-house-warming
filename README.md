@@ -1,9 +1,13 @@
 # DUA — House Warming Invitation
 
-**Live:** https://risurisvan0-oss.github.io/dua-house-warming/ — auto-deploys
-on every push to `master` via `.github/workflows/deploy.yml`. Real
-coordinates are still not set (see below), so the Journey/map screens
-aren't functional on the live site yet.
+**Live** (same app, two free hosts — either is fine to share):
+- https://dua-house-warming.vercel.app — Vercel, auto-deploys on every
+  push to `master` (GitHub repo connected directly to the Vercel project)
+- https://risurisvan0-oss.github.io/dua-house-warming/ — GitHub Pages,
+  auto-deploys on every push via `.github/workflows/deploy.yml`
+
+Real coordinates are still not set (see below), so the Journey/map
+screens aren't functional on either live site yet.
 
 An interactive, zero-budget digital invitation and "Journey Experience" for
 Majeed & Kamarunnisa's house-warming ceremony at **DUA**, 18 October 2026,
@@ -557,6 +561,23 @@ To set this up on a fork or a different repo from scratch: push the repo
 to GitHub, then either copy this same workflow file, or go to
 **Settings → Pages**, set **Source** to "GitHub Actions", and let GitHub
 suggest a starter workflow.
+
+### Vercel — already set up
+
+Also already deployed (see the **Live** link at the top). The Vercel
+project (`dua-house-warming`, under the `risurisvan0-9075` account) is
+connected directly to this GitHub repo, so it rebuilds and redeploys to
+production automatically on every push to `master` — no workflow file
+needed, Vercel does this natively once a project is linked to a repo.
+Framework preset: Vite (auto-detected); build command `vite build`
+(i.e. the project's own `npm run build`); output directory `dist`. No
+environment variables required.
+
+To set this up from scratch on a fork or different repo: `npx vercel
+--prod` from the project root (prompts to log in and link/create a
+project the first time), or import the GitHub repo directly from the
+[Vercel dashboard](https://vercel.com/new) — either way auto-detects
+Vite with no configuration needed.
 
 ### Cloudflare Pages
 
